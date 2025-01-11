@@ -4,7 +4,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "webpack --mode production",
+    "start": "node dist/bundle.js"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +19,13 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.5",
     "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-node-externals": "^3.0.0"
   }
 }

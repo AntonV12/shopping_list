@@ -2,6 +2,16 @@
   box-sizing: border-box;
 }
 
+body {
+  font-family: "Overpass", serif !important;
+}
+
+h1,
+h5,
+.btn-link {
+  font-family: "Russo One", serif !important;
+}
+
 .dropdown-item {
   cursor: pointer;
 
@@ -33,6 +43,20 @@
   }
   &-success:hover {
     background-color: #a3cfbb;
+  }
+
+  button {
+    color: #052c65;
+
+    &:hover {
+      background-color: #052c65;
+    }
+  }
+
+  .form-check-input {
+    &:checked {
+      background-color: #052c65;
+    }
   }
 }
 
@@ -82,5 +106,17 @@
       color: #052c65;
       transform: scale(1.1);
     }
+  }
+}
+
+.products-list {
+  h1 {
+    background-color: #052c65;
+    color: white !important;
+    width: max-content;
+    margin: 0 auto;
+    padding: 0.3em;
+    border-radius: 0.2em;
+    box-shadow: 0.3em 0.3em 1em #052c65;
   }
 }

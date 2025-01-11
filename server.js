@@ -1,5 +1,5 @@
 import express from "express";
-//import cors from "cors";
+import cors from "cors";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
@@ -14,15 +14,13 @@ const port = 5000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(express.static(path.join(__dirname, "client", "dist")));
-//app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(express.json());
 app.use(cookieParser(process.env.ACCESS_TOKEN_SECRET));
 app.use(cookieParser(process.env.REFRESH_TOKEN_SECRET));
 
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
-
-console.log(path.join(__dirname, "client", "dist", "index.html"));
 
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
