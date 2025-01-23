@@ -23,7 +23,7 @@ export const addProduct = createAsyncThunk<ProductType, ProductType, { rejectVal
   "products/addProduct",
   async (product, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/products/add", {
+      const response = await fetch("/products/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export const fetchProducts = createAsyncThunk<ProductType[], number, { rejectVal
   "products/fetchProducts",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/products/fetch/${id}`);
+      const response = await fetch(`/products/fetch/${id}`);
 
       if (!response.ok) {
         const error = await response.json();
@@ -72,7 +72,7 @@ export const updateProduct = createAsyncThunk<ProductType, ProductType, { reject
   "products/updateProduct",
   async (product, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/products/update/${product.id}`, {
+      const response = await fetch(`/products/update/${product.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +99,7 @@ export const deleteProduct = createAsyncThunk<number, number, { rejectValue: Err
   "products/deleteProduct",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/products/delete/${id}`, {
+      const response = await fetch(`/products/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -123,7 +123,7 @@ export const updateProducts = createAsyncThunk<ProductType[], { products: Produc
   "products/updateProducts",
   async (products, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/products/update`, {
+      const response = await fetch(`/products/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

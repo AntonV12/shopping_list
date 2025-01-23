@@ -20,7 +20,7 @@ export const loginUser = createAsyncThunk<UserType, { login: string; password: s
   "users/loginUser",
   async ({ login, password }, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/auth/login", {
+      const response = await fetch("/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export const fetchCurrentUser = createAsyncThunk<UserType, void, { rejectValue: 
   "users/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/auth/current-user", {
+      const response = await fetch("/auth/current-user", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +79,7 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: ErrorType 
   "users/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/auth/logout", {
+      const response = await fetch("/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

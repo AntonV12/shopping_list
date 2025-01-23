@@ -22,7 +22,7 @@ export const registerUser = createAsyncThunk<UserType, UserType, { rejectValue: 
   "users/registerUser",
   async (user, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/auth/register", {
+      const response = await fetch("/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export const fetchUsers = createAsyncThunk<UserType[], void, { rejectValue: Erro
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/auth/users", {
+      const response = await fetch("/auth/users", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export const updateUser = createAsyncThunk<
   { rejectValue: ErrorType }
 >("users/updateUser", async ({ user }, { rejectWithValue }) => {
   try {
-    const response = await fetch(`http://localhost:5000/auth/users/${user.id}`, {
+    const response = await fetch(`/auth/users/${user.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
