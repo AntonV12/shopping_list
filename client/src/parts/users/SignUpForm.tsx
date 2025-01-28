@@ -100,14 +100,15 @@ function SignUpForm({ handleCloseModal }: { handleCloseModal: () => void }) {
               placeholder="Пароль"
               value={password}
               onChange={handlePasswordChange}
-              pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+              //pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"
               onFocus={handleFocus}
               isInvalid={error === "Неверный пароль" ? true : false}
             />
             <Form.Control.Feedback type="invalid">
-              {error
-                ? error
-                : "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру"}
+              {
+                error && error
+                //: "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру"
+              }
             </Form.Control.Feedback>
           </Form.Group>
         </Row>

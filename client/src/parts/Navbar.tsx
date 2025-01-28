@@ -8,8 +8,6 @@ import { UnknownAction } from "@reduxjs/toolkit";
 
 function NavbarHomePage({
   handleShowModal,
-  setIsFormShow,
-  isFormShow,
 }: {
   handleShowModal: () => void;
   setIsFormShow: (value: boolean) => void;
@@ -35,10 +33,6 @@ function NavbarHomePage({
     }
   };
 
-  const handleClick = () => {
-    setIsFormShow(!isFormShow);
-  };
-
   return (
     <Navbar expand="lg">
       <div className="w-100 p-3 m-0 d-flex justify-content-between">
@@ -50,15 +44,6 @@ function NavbarHomePage({
                 Выход
               </Button>
             </div>
-            <Button
-              variant="link"
-              className=" text-primary-emphasis"
-              id="add-product"
-              active={isFormShow}
-              onClick={handleClick}
-            >
-              Добавить
-            </Button>
           </>
         ) : (
           <Button variant="link" className="text-primary-emphasis" onClick={handleShowModal}>

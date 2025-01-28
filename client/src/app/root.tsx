@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useAppDispatch } from "./store";
 import NewProductForm from "../parts/products/NewProductForm";
 import ProductsList from "../parts/products/ProductsList";
+import { Button } from "react-bootstrap";
 
 function Root() {
   const [isModalShow, setIsModalShow] = useState<boolean>(false);
@@ -23,6 +24,10 @@ function Root() {
   const handleShowModal = () => setIsModalShow(true);
   const handleCloseModal = () => setIsModalShow(false);
 
+  const handleClick = () => {
+    setIsFormShow(!isFormShow);
+  };
+
   return (
     <div id="wrapper">
       <header>
@@ -34,8 +39,17 @@ function Root() {
           <h1>Пожалуйста, авторизуйтесь</h1>
         ) : (
           <>
-            {isFormShow && <NewProductForm />}
             <ProductsList />
+            <Button
+              variant="link"
+              className=" text-primary-emphasis ms-auto"
+              id="add-product"
+              active={isFormShow}
+              onClick={handleClick}
+            >
+              Добавить
+            </Button>
+            {isFormShow && <NewProductForm />}
           </>
         )}
       </main>
