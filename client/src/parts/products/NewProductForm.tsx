@@ -1,7 +1,7 @@
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/esm/Button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CategoriesList from "../categories/CategoriesList";
 import { addProduct, clearProductError, clearProductMessage } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
@@ -17,6 +17,17 @@ const NewProductForm = () => {
   const message = useSelector((state: { products: { message: string | null } }) => state.products.message);
   const dispatch = useAppDispatch();
   const currentUserId = useSelector(selectCurrentUserId);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const scrollToElement = (elem: HTMLElement) => {
+    elem.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      scrollToElement(inputRef.current);
+    }
+  }, []);
 
   const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -45,6 +56,9 @@ const NewProductForm = () => {
       setName("");
       dispatch(clearProductError());
       setValidated(false);
+      if (inputRef.current) {
+        scrollToElement(inputRef.current);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -78,6 +92,7 @@ const NewProductForm = () => {
                 isInvalid={error !== null}
                 autoFocus
                 autoComplete="off"
+                ref={inputRef}
               />
             </div>
             <CategoriesList category={category} setCategory={setCategory} isFirstElement={true} />

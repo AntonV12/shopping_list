@@ -103,9 +103,10 @@ function LoginForm({ handleCloseModal }: { handleCloseModal: () => void }) {
               isInvalid={error === "Неверный пароль" ? true : false}
             />
             <Form.Control.Feedback type="invalid">
-              {error
-                ? error
-                : "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру"}
+              {
+                error && error
+                //: "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру"
+              }
             </Form.Control.Feedback>
           </Form.Group>
         </Row>
