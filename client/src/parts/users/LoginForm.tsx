@@ -81,7 +81,7 @@ function LoginForm({ handleCloseModal }: { handleCloseModal: () => void }) {
             <Form.Control
               required
               type="text"
-              placeholder="Логин"
+              placeholder="Введите логин"
               value={login}
               onChange={handleLoginChange}
               onFocus={handleFocus}
@@ -96,18 +96,13 @@ function LoginForm({ handleCloseModal }: { handleCloseModal: () => void }) {
             <Form.Control
               required
               type="password"
-              placeholder="Пароль"
+              placeholder="Введите пароль"
               value={password}
               onChange={handlePasswordChange}
               onFocus={handleFocus}
               isInvalid={error === "Неверный пароль" ? true : false}
             />
-            <Form.Control.Feedback type="invalid">
-              {
-                error && error
-                //: "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру"
-              }
-            </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{error && error}</Form.Control.Feedback>
           </Form.Group>
         </Row>
         <Button

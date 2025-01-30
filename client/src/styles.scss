@@ -4,6 +4,8 @@
 
 body {
   font-family: "Overpass", serif !important;
+  min-height: 100vh;
+  position: relative;
 }
 
 h1,
@@ -31,8 +33,17 @@ h5,
 }
 
 #wrapper {
-  width: min(100%, 600px);
-  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.container {
+  width: min(100%, 700px) !important;
+  margin: 0 auto !important;
+}
+
+header {
+  padding-left: 2em;
 }
 
 .list-group-item {
@@ -97,26 +108,48 @@ h5,
   }
 }
 
-.dropdown-menu {
-  svg {
-    transition: transform 0.3s;
+svg {
+  transition: transform 0.3s;
 
-    &:hover {
-      cursor: pointer;
-      color: #052c65;
-      transform: scale(1.1);
-    }
+  &:hover {
+    cursor: pointer;
+    color: #052c65;
+    transform: scale(1.1);
   }
 }
 
 .products-list {
   h1 {
-    background-color: #052c65;
-    color: white !important;
     width: max-content;
     margin: 0 auto;
     padding: 0.3em 1em;
-    border-radius: 0.2em;
-    box-shadow: 0.3em 0.3em 1em #052c65;
+  }
+}
+
+.btn-light {
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.2s ease-in-out !important;
+
+  &.active,
+  &.active + button {
+    background-color: #052c65 !important;
+    color: white !important;
+
+    svg:hover {
+      color: white !important;
+    }
+  }
+}
+
+footer {
+  text-align: center;
+  opacity: 0.6;
+  width: 100%;
+}
+
+.nav-link {
+  &.active {
+    font-weight: 900 !important;
   }
 }

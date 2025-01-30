@@ -6,13 +6,7 @@ import { selectCurrentUserId, clearAuthError, clearAuthMessage, logoutUser } fro
 import { useAppDispatch } from "../app/store";
 import { UnknownAction } from "@reduxjs/toolkit";
 
-function NavbarHomePage({
-  handleShowModal,
-}: {
-  handleShowModal: () => void;
-  setIsFormShow: (value: boolean) => void;
-  isFormShow: boolean;
-}) {
+function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
   const currentUserId: number | null = useSelector(selectCurrentUserId);
   const dispatch = useAppDispatch();
 
@@ -35,7 +29,7 @@ function NavbarHomePage({
 
   return (
     <Navbar expand="lg">
-      <div className="w-100 p-3 m-0 d-flex justify-content-between">
+      <div className="w-100 m-0 d-flex justify-content-between">
         {currentUserId ? (
           <>
             <div>
