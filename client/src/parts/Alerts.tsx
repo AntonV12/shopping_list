@@ -3,12 +3,16 @@ import { useSelector } from "react-redux";
 import Alert from "react-bootstrap/Alert";
 import { clearAuthError, clearAuthMessage } from "../parts/users/authSlice";
 import { clearUserMessage, clearUserError } from "./users/usersSlice";
+import { clearProductMessage, clearProductError } from "./products/productsSlice";
 import { useAppDispatch } from "../app/store";
 
 const Alerts = () => {
   const message = useSelector(
-    (state: { users: { message: string | null }; auth: { message: string | null } }) =>
-      state.users.message || state.auth.message
+    (state: {
+      users: { message: string | null };
+      auth: { message: string | null };
+      products: { message: string | null };
+    }) => state.users.message || state.auth.message || state.products.message
   );
   const error = useSelector(
     (state: {
@@ -24,6 +28,7 @@ const Alerts = () => {
       const messageTimeout = setTimeout(() => {
         dispatch(clearAuthMessage());
         dispatch(clearUserMessage());
+        dispatch(clearProductMessage());
       }, 3000);
       return () => clearTimeout(messageTimeout);
     }
@@ -31,6 +36,7 @@ const Alerts = () => {
       const errorTimeout = setTimeout(() => {
         dispatch(clearAuthError());
         dispatch(clearUserError());
+        dispatch(clearProductError());
       }, 3000);
       return () => clearTimeout(errorTimeout);
     }

@@ -8,12 +8,6 @@ export const register = async (req, res) => {
   const { login, password, categories } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  /* if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password)) {
-    return res.status(400).json({
-      error: "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру",
-    });
-  } */
-
   try {
     const [existingUser] = await pool.execute("SELECT * FROM users WHERE login = ?", [login]);
 

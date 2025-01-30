@@ -1,8 +1,7 @@
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/esm/Button";
-import { useState, useEffect, useRef } from "react";
-import CategoriesList from "../categories/CategoriesList";
+import { useState, useRef } from "react";
 import { addProduct, clearProductError, clearProductMessage } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
@@ -11,7 +10,6 @@ import { selectCurrentUserId } from "../users/authSlice";
 
 const NewProductForm = () => {
   const [name, setName] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
   const [validated, setValidated] = useState<boolean>(false);
   const error = useSelector((state: { products: { error: string | null } }) => state.products.error);
   const message = useSelector((state: { products: { message: string | null } }) => state.products.message);
@@ -20,14 +18,8 @@ const NewProductForm = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToElement = (elem: HTMLElement) => {
-    elem.scrollIntoView({ behavior: "smooth" });
+    elem.scrollIntoView({ behavior: "smooth", block: "center" });
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      scrollToElement(inputRef.current);
-    }
-  }, []);
 
   const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -44,6 +36,8 @@ const NewProductForm = () => {
     setValidated(true);
 
     try {
+      const category = localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "";
+
       const newProduct = {
         id: null,
         name: name,
@@ -74,7 +68,7 @@ const NewProductForm = () => {
   };
 
   return (
-    <Card className="w-100 d-flex justify-content-center mb-3 shadow-lg" style={{ maxWidth: "600px" }}>
+    <Card className="w-100 d-flex justify-content-center mb-3 shadow-lg" style={{ maxWidth: "700px" }}>
       <Form noValidate validated={validated} className="p-3 w-100" id="new-product-form" onSubmit={handleSubmit}>
         <Row className="mb-3">
           <Form.Group className="d-flex align-items-end justify-content-center">
@@ -85,17 +79,15 @@ const NewProductForm = () => {
                 id="name"
                 name="name"
                 type="text"
-                placeholder="Добавить продукт"
+                placeholder="Введите название продукта"
                 value={name}
                 onChange={handleChangeValue}
                 onFocus={clearAlerts}
                 isInvalid={error !== null}
-                autoFocus
                 autoComplete="off"
                 ref={inputRef}
               />
             </div>
-            <CategoriesList category={category} setCategory={setCategory} isFirstElement={true} />
           </Form.Group>
 
           <Form.Control.Feedback className="d-block" type={error ? "invalid" : "valid"} style={{ height: "10px" }}>

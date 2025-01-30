@@ -7,6 +7,10 @@ export const addProduct = async (req, res) => {
     return res.status(400).json({ error: "Название и категория продукта обязательны" });
   }
 
+  if (category === "Все") {
+    return res.status(400).json({ error: "Чтобы добавить продукт, выберите категорию" });
+  }
+
   try {
     const [existingProduct] = await pool.execute("SELECT * FROM products WHERE name = ? AND author_id = ?", [
       name,

@@ -1,6 +1,5 @@
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { useEffect, useRef, useState, memo } from "react";
 import { useSelector } from "react-redux";
 import { ProductType, fetchProducts, selectAllProducts, deleteProduct } from "./productsSlice";
@@ -9,6 +8,7 @@ import ProductItem from "./ProductItem";
 import CategoriesList from "../categories/CategoriesList";
 import { selectCurrentUserId } from "../users/authSlice";
 import { selectUserById, UserType, fetchUsers } from "../users/usersSlice";
+import NewProductForm from "./NewProductForm";
 
 const ProductsList = () => {
   const [productsList, setProductsList] = useState<ProductType[]>([]);
@@ -51,6 +51,9 @@ const ProductsList = () => {
   }, [products]);
 
   const handleClearList = () => {
+    const confirm = window.confirm("Вы уверены, что хотите очистить список?");
+    if (!confirm) return;
+
     for (const product of productsList) {
       if (product.checked) {
         dispatch(deleteProduct(product.id as number)).unwrap();
@@ -61,20 +64,15 @@ const ProductsList = () => {
   return (
     <div className="products-list w-100">
       <h1 className="text-center mb-3 text-primary-emphasis">Список покупок</h1>
-      <ButtonGroup className="relative w-100 mb-3">
-        <CategoriesList category={selectedCategory} setCategory={setSelectedCategory} isFirstElement={false} />
-        <Button
-          variant="link"
-          className="rounded ms-1 text-primary-emphasis z-1"
-          onClick={handleClearList}
-          style={{ position: "absolute", right: "0" }}
-        >
+      <CategoriesList category={selectedCategory} setCategory={setSelectedCategory} isFirstElement={false} />
+      <div className="w-100 text-end">
+        <Button id="clear-btn" variant="link" className="text-primary-emphasis p-0" onClick={handleClearList}>
           Очистить список
         </Button>
-      </ButtonGroup>
+      </div>
 
-      {sortedList.length === 0 && <p className="text-center">Список покупок пуст...</p>}
-      <ListGroup>
+      {sortedList.length === 0 && selectedCategory === "Все" && <p className="text-center">Список покупок пуст...</p>}
+      <ListGroup className="mb-3">
         {categories?.map((category) => (
           <div key={category}>
             {selectedCategory === "Все" ? (
@@ -90,7 +88,7 @@ const ProductsList = () => {
               </>
             ) : (
               <>
-                {selectedCategory === category && <h3>{category}</h3>}{" "}
+                {selectedCategory === category && <h5 className="text-primary-emphasis">{category}</h5>}{" "}
                 {filteredList
                   .filter((product) => product.category === category)
                   .map((product) => (
@@ -102,6 +100,12 @@ const ProductsList = () => {
         ))}
         {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
       </ListGroup>
+
+      {selectedCategory !== "Все" ? (
+        <NewProductForm />
+      ) : (
+        <p className="mt-3 text-secondary">Чтобы добавить продукт, выберите категорию</p>
+      )}
     </div>
   );
 };
