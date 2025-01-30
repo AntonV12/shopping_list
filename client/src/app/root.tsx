@@ -42,7 +42,6 @@ function Root() {
           ) : (
             <>
               <ProductsList />
-              {/* {isFormShow && <NewProductForm />} */}
             </>
           )}
         </main>
