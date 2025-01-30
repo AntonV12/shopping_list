@@ -20,6 +20,7 @@ function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
   const handleLogout = () => {
     try {
       dispatch(logoutUser());
+      localStorage.removeItem("category");
       clearAlertsWithTimeout(clearAuthMessage, 3000);
     } catch (error) {
       console.error("Logout error:", error);
