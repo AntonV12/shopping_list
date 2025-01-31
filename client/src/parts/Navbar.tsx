@@ -30,11 +30,12 @@ function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
 
   return (
     <Navbar expand="lg">
-      <div className="w-100 m-0 d-flex justify-content-between">
+      <div className="w-100 m-0 d-flex align-items-center">
+        <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} />
+
         {currentUserId ? (
           <>
             <div>
-              <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} />
               <Button variant="link" className="text-primary-emphasis" onClick={handleLogout}>
                 Выход
               </Button>
