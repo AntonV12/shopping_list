@@ -15,3 +15,4 @@ if (rootElement) {
     </React.StrictMode>
   );
 }
+//изменения в dev2
