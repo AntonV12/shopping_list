@@ -63,13 +63,7 @@ const ProductsList = () => {
 
   return (
     <div className="products-list w-100">
-      <h1 className="text-center mb-3 text-primary-emphasis">Список покупок</h1>
       <CategoriesList category={selectedCategory} setCategory={setSelectedCategory} isFirstElement={false} />
-      <div className="w-100 text-end">
-        <Button id="clear-btn" variant="link" className="text-primary-emphasis p-0" onClick={handleClearList}>
-          Очистить список
-        </Button>
-      </div>
 
       {sortedList.length === 0 && selectedCategory === "Все" && <p className="text-center">Список покупок пуст...</p>}
       <ListGroup className="mb-3">
@@ -88,7 +82,6 @@ const ProductsList = () => {
               </>
             ) : (
               <>
-                {selectedCategory === category && <h5 className="text-primary-emphasis">{category}</h5>}{" "}
                 {filteredList
                   .filter((product) => product.category === category)
                   .map((product) => (
@@ -100,6 +93,12 @@ const ProductsList = () => {
         ))}
         {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
       </ListGroup>
+
+      <div className="w-100 mb-3">
+        <Button id="clear-btn" variant="link" className="text-primary-emphasis p-0" onClick={handleClearList}>
+          Очистить список
+        </Button>
+      </div>
 
       {selectedCategory !== "Все" ? (
         <NewProductForm />

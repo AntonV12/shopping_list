@@ -43,7 +43,12 @@ const AddCategoryForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex p-1 align-items-center" style={{ height: "46px" }}>
+    <form
+      id="addCategoryForm"
+      onSubmit={handleSubmit}
+      className="d-flex p-1 align-items-center"
+      style={{ height: "46px" }}
+    >
       <input
         type="text"
         className="w-75 me-1 form-control"

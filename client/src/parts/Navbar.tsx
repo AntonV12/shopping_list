@@ -30,13 +30,18 @@ function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
 
   return (
     <Navbar expand="lg">
-      <div className="w-100 m-0 d-flex align-items-center">
-        <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} />
+      <div className="w-100 m-0 pe-3 ps-3 d-flex align-items-center justify-content-between">
+        <div className="logo text-center">
+          <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} className="mb-1" />
+          <p className="text-dark-emphasis m-0">{window.location.hostname}</p>
+        </div>
+
+        {currentUserId && <h1 className="text-center m-0 text-primary-emphasis">Список покупок</h1>}
 
         {currentUserId ? (
           <>
-            <div>
-              <Button variant="link" className="text-primary-emphasis" onClick={handleLogout}>
+            <div className="exit-btn">
+              <Button variant="link" className="text-primary-emphasis p-0" onClick={handleLogout}>
                 Выход
               </Button>
             </div>

@@ -68,6 +68,10 @@ const ListItem = ({
         dispatch(setUserError("Такая категория уже есть"));
         return;
       }
+      if (inputValue === cat) {
+        setIsEdit(false);
+        return;
+      }
       const updatedUser: UserType = {
         ...currentUser,
         categories: currentUser.categories.map((c: string) => (c === cat ? inputValue : c)),

@@ -22,10 +22,6 @@ function Root() {
   const handleShowModal = () => setIsModalShow(true);
   const handleCloseModal = () => setIsModalShow(false);
 
-  if (authStatus === "loading") {
-    return <div className="position-absolute top-50 start-50 translate-middle">Loading...</div>;
-  }
-
   return (
     <div id="wrapper" className="d-flex flex-column">
       <header>
@@ -45,6 +41,7 @@ function Root() {
             </section>
           ) : (
             <>
+              {authStatus === "loading" && <p>Загрузка...</p>}
               <ProductsList />
             </>
           )}
