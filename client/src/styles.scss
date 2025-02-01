@@ -104,11 +104,15 @@ h5,
   }
 }
 
-.logo {
-  margin-left: 2.2em;
-}
 .exit-btn {
-  margin-right: 2.2em;
+  @media screen and (min-width: 600px) {
+    margin-right: 2.2em;
+  }
+}
+.logo {
+  @media screen and (min-width: 600px) {
+    margin-left: 2.2em;
+  }
 }
 
 svg {
