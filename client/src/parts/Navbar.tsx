@@ -30,27 +30,27 @@ function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
 
   return (
     <Navbar expand="lg">
-      <div className="w-100 m-0 pe-3 ps-3 d-flex align-items-center justify-content-between">
-        <div className="logo text-center">
-          <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} className="mb-1" />
-          <p className="text-dark-emphasis m-0">{window.location.hostname}</p>
+      <div className="w-100 m-0  d-flex align-items-center justify-content-between">
+        <div className="logo d-flex justify-content-start" style={{ width: "140px" }}>
+          <div className="text-center">
+            <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} className="mb-1" />
+            <p className="text-dark-emphasis m-0">{window.location.hostname}</p>
+          </div>
         </div>
 
-        {currentUserId && <h1 className="text-center m-0 text-primary-emphasis">Список покупок</h1>}
+        <h1 className="text-center m-0 text-primary-emphasis">Список покупок</h1>
 
-        {currentUserId ? (
-          <>
-            <div className="exit-btn">
-              <Button variant="link" className="text-primary-emphasis p-0" onClick={handleLogout}>
-                Выход
-              </Button>
-            </div>
-          </>
-        ) : (
-          <Button variant="link" className="text-primary-emphasis" onClick={handleShowModal}>
-            Вход/регистрация
-          </Button>
-        )}
+        <div className="exit-btn text-end" style={{ width: "140px" }}>
+          {currentUserId ? (
+            <Button variant="link" className="text-dark-emphasis p-0" onClick={handleLogout}>
+              Выход
+            </Button>
+          ) : (
+            <Button variant="link" className="text-dark-emphasis text-end" onClick={handleShowModal}>
+              Вход/регистрация
+            </Button>
+          )}
+        </div>
       </div>
     </Navbar>
   );

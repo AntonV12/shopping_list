@@ -73,9 +73,6 @@ h5,
       transform: scale(1.2);
       cursor: pointer;
     }
-    &:active {
-      color: #000000;
-    }
   }
 }
 
@@ -106,12 +103,12 @@ h5,
 
 .exit-btn {
   @media screen and (min-width: 600px) {
-    margin-right: 2.2em;
+    margin-right: 2em;
   }
 }
 .logo {
   @media screen and (min-width: 600px) {
-    margin-left: 2.2em;
+    margin-left: 2em;
   }
 }
 
@@ -120,7 +117,7 @@ svg {
 
   &:hover {
     cursor: pointer;
-    color: #052c65;
+    color: white;
     transform: scale(1.1);
   }
 }
@@ -141,10 +138,6 @@ svg {
   &.active + button {
     background-color: #052c65 !important;
     color: white !important;
-
-    svg:hover {
-      color: white !important;
-    }
   }
 }
 

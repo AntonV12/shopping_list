@@ -45,7 +45,7 @@ const ProductItem = ({
           {product.name}
         </label>
 
-        <Button variant="outline-primary" className="border-0" onClick={handleDelete}>
+        <Button variant="outline-secondary" className="border-0" onClick={handleDelete}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

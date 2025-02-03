@@ -94,17 +94,17 @@ const ProductsList = () => {
         {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
       </ListGroup>
 
-      <div className="w-100 mb-3">
-        <Button id="clear-btn" variant="link" className="text-primary-emphasis p-0" onClick={handleClearList}>
-          Очистить список
-        </Button>
-      </div>
-
       {selectedCategory !== "Все" ? (
         <NewProductForm />
       ) : (
         <p className="mt-3 text-secondary">Чтобы добавить продукт, выберите категорию</p>
       )}
+
+      <div className="w-100 mb-3 text-end">
+        <Button id="clear-btn" variant="link" className="text-dark-emphasis p-0" onClick={handleClearList}>
+          Очистить список
+        </Button>
+      </div>
     </div>
   );
 };

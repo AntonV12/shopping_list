@@ -32,11 +32,10 @@ function Root() {
         <main className="d-flex flex-column justify-content-center align-items-center w-100">
           {!currentUserId ? (
             <section>
-              <h1 className="mb-3">Пожалуйста, авторизуйтесь</h1>
-              <br />
-              <p className="text-dark-emphasis">
+              <p className="text-dark-emphasis mt-3">
                 Сервис для управления семейным списком покупок. Вы можете разделить свой список покупок на категории.
-                Просто добавьте товары в желаемую категорию и поделитесь своим списком с членами семьи.
+                Общий аккаунт для всей семьи позволит планировать покупки. Просто добавьте товары в желаемую категорию и
+                вся семья будет знать, что нужно купить.
               </p>
             </section>
           ) : (
