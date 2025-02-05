@@ -58,7 +58,7 @@ const AddCategoryForm = ({
         placeholder="Новая категория"
         maxLength={20}
       />
-      <button type="submit" className="bg-transparent border border-0">
+      <button type="submit" className="border-0 btn btn-outline-secondary p-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="30"

@@ -32,7 +32,7 @@ function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
     <Navbar expand="lg">
       <div className="w-100 m-0  d-flex align-items-center justify-content-between">
         <div className="logo d-flex justify-content-start" style={{ width: "140px" }}>
-          <div className="text-center">
+          <div className="text-center ps-2">
             <img src="/logo.jpg" alt="logo" width={"50px"} height={"50px"} className="mb-1" />
             <p className="text-dark-emphasis m-0">{window.location.hostname}</p>
           </div>
@@ -42,7 +42,7 @@ function NavbarHomePage({ handleShowModal }: { handleShowModal: () => void }) {
 
         <div className="exit-btn text-end" style={{ width: "140px" }}>
           {currentUserId ? (
-            <Button variant="link" className="text-dark-emphasis p-0" onClick={handleLogout}>
+            <Button variant="link" className="text-dark-emphasis" onClick={handleLogout}>
               Выход
             </Button>
           ) : (

@@ -167,13 +167,7 @@ const usersSlice = createSlice({
           existingUser.categories = categories;
         }
 
-        if (existingUser?.login !== login) {
-          state.message = "Пользователь успешно обновлен";
-        } else if (existingUser?.password !== password) {
-          state.message = "Пароль успешно обновлен";
-        } else {
-          state.message = "Категория успешно обновлена";
-        }
+        state.message = "Категории успешно обновлены";
       })
       .addCase(updateUser.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
