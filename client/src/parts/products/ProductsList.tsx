@@ -72,7 +72,7 @@ const ProductsList = () => {
             {selectedCategory === "Все" ? (
               <>
                 {sortedList.some((product) => product.category === category) && (
-                  <h5 className="text-primary-emphasis">{category}</h5>
+                  <h5 className="text-primary-emphasis mt-2">{category}</h5>
                 )}
                 {sortedList
                   .filter((product) => product.category === category)

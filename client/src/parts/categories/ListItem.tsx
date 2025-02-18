@@ -27,7 +27,8 @@ const ListItem = ({
   const [inputValue, setInputValue] = useState<string>("");
   const products: ProductType[] = useSelector(selectAllProducts);
   const ref = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState<number>(ref.current?.offsetWidth || 0);
+  //const [width, setWidth] = useState<number>(ref.current?.offsetWidth || 0);
+  const [isShowControl, setIsShowControl] = useState<boolean>(false);
 
   const handleDeleteCategory = async (cat: string) => {
     const confirm = window.confirm("Вы уверены, что хотите удалить эту категорию?");
@@ -55,7 +56,7 @@ const ListItem = ({
   };
 
   const onShowEdit = () => {
-    setWidth(ref.current?.offsetWidth || 0);
+    //setWidth(ref.current?.offsetWidth || 0);
     setIsEdit(true);
     setInputValue(cat);
   };
@@ -87,6 +88,8 @@ const ListItem = ({
       setIsEdit(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsShowControl(false);
     }
   };
 
@@ -98,7 +101,7 @@ const ListItem = ({
             <form
               onSubmit={handleSubmit}
               className="d-flex p-1 align-items-center rounded "
-              style={{ maxWidth: width, backgroundColor: "#052c65" }}
+              style={{ /* maxWidth: width, */ backgroundColor: "#052c65" }}
             >
               <input
                 type="text"
@@ -122,23 +125,28 @@ const ListItem = ({
               </button>
             </form>
           ) : (
-            <ButtonGroup ref={ref}>
+            <ButtonGroup
+              ref={ref}
+              className="position-relative"
+              onMouseOver={() => setIsShowControl(true)}
+              onMouseLeave={() => setIsShowControl(false)}
+            >
               <Button
                 variant="light"
-                className=" text-primary-emphasis d-flex align-items-center border border-0 rounded-0"
+                className="category-btn text-primary-emphasis d-flex align-items-center border border-0 rounded-0"
                 active={cat === category}
                 onClick={() => handleSetActiveCategory(cat as string)}
-                style={{ height: "2.5rem" }}
               >
                 <p className="m-0 me-2" style={{ maxWidth: "10rem", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {cat}
                 </p>
               </Button>
-              {cat !== "Все" && cat === category && (
+              {cat !== "Все" /* && cat === category */ && isShowControl && (
                 <Button
                   variant="light"
-                  className="d-flex align-items-center buttons-block p-1.5  text-primary-emphasis border border-0 rounded-0"
-                  style={{ height: "2.5rem" }}
+                  className="control-btn d-flex align-items-center buttons-block text-primary-emphasis rounded-1 position-absolute"
+                  onMouseOver={() => setIsShowControl(true)}
+                  onMouseLeave={() => setIsShowControl(false)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -8,6 +8,17 @@ body {
   position: relative;
 }
 
+nav {
+  @media screen and (max-width: 600px) {
+    margin-bottom: 10px;
+  }
+  h1 {
+    @media screen and (max-width: 600px) {
+      font-size: 1.5rem !important;
+    }
+  }
+}
+
 h1,
 h5,
 .btn-link {
@@ -44,6 +55,12 @@ h5,
 
 .list-group-item {
   user-select: none;
+
+  &:hover,
+  & input,
+  & label {
+    cursor: pointer !important;
+  }
 
   &-light:hover {
     background-color: #e9ecef;
@@ -127,6 +144,12 @@ svg {
     width: max-content;
     margin: 0 auto;
   }
+
+  .btn-group {
+    &:first-child {
+      margin-right: 15px;
+    }
+  }
 }
 
 .btn-light {
@@ -150,5 +173,26 @@ footer {
 .nav-link {
   &.active {
     font-weight: 900 !important;
+  }
+}
+
+.category-btn {
+  height: 2.5rem;
+}
+
+.control-btn {
+  height: 2.5rem;
+  left: 50%;
+  top: -40px;
+  transform: translateX(-50%) !important;
+  border: none !important;
+  border-bottom: 2px solid #fff !important;
+}
+
+#new-product-form {
+  & input {
+    &::placeholder {
+      color: #c7c7c7 !important;
+    }
   }
 }

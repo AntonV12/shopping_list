@@ -2,11 +2,12 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/esm/Button";
 import { useState, useRef } from "react";
-import { addProduct, clearProductError, clearProductMessage } from "./productsSlice";
+import { addProduct, clearProductError, clearProductMessage, fetchProducts } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
 import Card from "react-bootstrap/Card";
 import { selectCurrentUserId } from "../users/authSlice";
+import { fetchUsers } from "../users/usersSlice";
 
 const NewProductForm = () => {
   const [name, setName] = useState<string>("");
@@ -53,6 +54,9 @@ const NewProductForm = () => {
       if (inputRef.current) {
         scrollToElement(inputRef.current);
       }
+
+      await dispatch(fetchProducts(currentUserId as number)).unwrap();
+      await dispatch(fetchUsers()).unwrap();
     } catch (error) {
       console.error(error);
     }
@@ -95,7 +99,11 @@ const NewProductForm = () => {
           </Form.Control.Feedback>
         </Row>
 
-        <Button variant="light" className="bg-gradient bg-dark-subtle text-primary-emphasis" type="submit">
+        <Button
+          variant="light"
+          className="bg-gradient bg-dark-subtle text-primary-emphasis d-flex align-items-center justify-content-center"
+          type="submit"
+        >
           отправить
         </Button>
       </Form>

@@ -6,6 +6,7 @@ import { fetchCurrentUser, selectCurrentUserId } from "../parts/users/authSlice"
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "./store";
 import ProductsList from "../parts/products/ProductsList";
+import ProductsSyncButton from "../parts/products/ProductsSyncButton";
 
 function Root() {
   const [isModalShow, setIsModalShow] = useState<boolean>(false);
@@ -24,7 +25,7 @@ function Root() {
 
   return (
     <div id="wrapper" className="d-flex flex-column">
-      <header>
+      <header className="mb-3">
         <NavbarHomePage handleShowModal={handleShowModal} />
       </header>
 
@@ -44,6 +45,8 @@ function Root() {
               <ProductsList />
             </>
           )}
+
+          <ProductsSyncButton />
         </main>
 
         <Alerts />
