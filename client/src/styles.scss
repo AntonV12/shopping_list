@@ -57,7 +57,7 @@ h5,
   user-select: none;
 
   &:hover,
-  & input,
+  & input[type="checkbox"],
   & label {
     cursor: pointer !important;
   }

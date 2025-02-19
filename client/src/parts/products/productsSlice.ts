@@ -177,7 +177,7 @@ const productsSlice = createSlice({
       })
       .addCase(addProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to save user";
+        state.error = action.payload || "Failed to save product";
       })
       .addCase(fetchProducts.pending, (state) => {
         state.status = "loading";
@@ -203,7 +203,7 @@ const productsSlice = createSlice({
       })
       .addCase(updateProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to save user";
+        state.error = action.payload || "Failed to update product";
       })
       .addCase(deleteProduct.pending, (state) => {
         state.status = "loading";
@@ -228,7 +228,7 @@ const productsSlice = createSlice({
       })
       .addCase(updateProducts.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to save user";
+        state.error = action.payload || "Failed to update product";
       });
   },
 });

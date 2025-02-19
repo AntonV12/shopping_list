@@ -1,6 +1,6 @@
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { ProductType, fetchProducts, selectAllProducts, deleteProduct } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
@@ -50,7 +50,7 @@ const ProductsList = () => {
     }
   }, [products]);
 
-  const handleClearList = () => {
+  const handleClearList = useCallback(() => {
     const confirm = window.confirm("Вы уверены, что хотите очистить список?");
     if (!confirm) return;
 
@@ -59,7 +59,7 @@ const ProductsList = () => {
         dispatch(deleteProduct(product.id as number)).unwrap();
       }
     }
-  };
+  }, [dispatch, productsList]);
 
   return (
     <div className="products-list w-100">
@@ -95,7 +95,7 @@ const ProductsList = () => {
       </ListGroup>
 
       {selectedCategory !== "Все" ? (
-        <NewProductForm />
+        <NewProductForm setProductsList={setProductsList} />
       ) : (
         <p className="mt-3 text-secondary">Чтобы добавить продукт, выберите категорию</p>
       )}

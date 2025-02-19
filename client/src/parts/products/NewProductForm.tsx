@@ -8,8 +8,13 @@ import { useSelector } from "react-redux";
 import Card from "react-bootstrap/Card";
 import { selectCurrentUserId } from "../users/authSlice";
 import { fetchUsers } from "../users/usersSlice";
+import { ProductType } from "./productsSlice";
 
-const NewProductForm = () => {
+const NewProductForm = ({
+  setProductsList,
+}: {
+  setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
+}) => {
   const [name, setName] = useState<string>("");
   const [validated, setValidated] = useState<boolean>(false);
   const error = useSelector((state: { products: { error: string | null } }) => state.products.error);
@@ -46,8 +51,12 @@ const NewProductForm = () => {
         checked: false,
         author_id: currentUserId as number,
       };
+      setProductsList((prev) => {
+        return [...prev, { ...newProduct, id: (prev[prev.length - 1]?.id ?? 0) + 1 }];
+      });
 
       await dispatch(addProduct(newProduct)).unwrap();
+
       setName("");
       dispatch(clearProductError());
       setValidated(false);
@@ -101,10 +110,10 @@ const NewProductForm = () => {
 
         <Button
           variant="light"
-          className="bg-gradient bg-dark-subtle text-primary-emphasis d-flex align-items-center justify-content-center"
+          className="bg-gradient bg-dark-subtle text-primary-emphasis d-flex align-items-center justify-content-center pt-2"
           type="submit"
         >
-          отправить
+          добавить
         </Button>
       </Form>
     </Card>
