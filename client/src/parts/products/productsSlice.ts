@@ -34,15 +34,15 @@ export const addProduct = createAsyncThunk<ProductType, ProductType, { rejectVal
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to save user");
+        throw new Error(error.error || "Failed to save product");
       }
 
       return await response.json();
     } catch (err) {
       if (err instanceof Error) {
-        return rejectWithValue(err.message);
+        return rejectWithValue("");
       } else {
-        return rejectWithValue("Failed to save user");
+        return rejectWithValue("Failed to save product");
       }
     }
   }
@@ -59,11 +59,13 @@ export const fetchProducts = createAsyncThunk<ProductType[], number, { rejectVal
         throw new Error(error.error || "Failed to fetch products");
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch (err) {
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
+      return rejectWithValue("Failed to fetch products");
     }
   }
 );
@@ -89,7 +91,9 @@ export const updateProduct = createAsyncThunk<ProductType, ProductType, { reject
       return await response.json();
     } catch (err) {
       if (err instanceof Error) {
-        return rejectWithValue(err.message);
+        return rejectWithValue("Ошибка обновления продукта. Сервер не отвечает");
+      } else {
+        return rejectWithValue("Failed to save product");
       }
     }
   }
@@ -112,7 +116,7 @@ export const deleteProduct = createAsyncThunk<number, number, { rejectValue: Err
       return id;
     } catch (err) {
       if (err instanceof Error) {
-        return rejectWithValue(err.message);
+        return rejectWithValue("Ошибка удаления продукта. Сервер не отвечает");
       }
       return rejectWithValue("Failed to save user");
     }
@@ -177,7 +181,7 @@ const productsSlice = createSlice({
       })
       .addCase(addProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to save product";
+        state.error = action.payload || "Потеряна связь с сервером";
       })
       .addCase(fetchProducts.pending, (state) => {
         state.status = "loading";
@@ -188,22 +192,23 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to fetch products";
+        state.error = action.payload || "Потеряна связь с сервером";
       })
       .addCase(updateProduct.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(updateProduct.fulfilled, (state, action: PayloadAction<ProductType>) => {
+      .addCase(updateProduct.fulfilled, (state /*,  action: PayloadAction<ProductType> */) => {
         state.status = "succeeded";
-        const index = state.products.findIndex((p) => Number(p.id) === Number(action.payload.id));
 
-        if (index !== -1) {
-          state.products[index] = action.payload;
-        }
+        // const index = state.products.findIndex((p) => Number(p.id) === Number(action.payload.id));
+
+        // if (index !== -1) {
+        //   state.products[index] = action.payload;
+        // }
       })
       .addCase(updateProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to update product";
+        state.error = action.payload || "Потеряна связь с сервером";
       })
       .addCase(deleteProduct.pending, (state) => {
         state.status = "loading";
@@ -217,7 +222,7 @@ const productsSlice = createSlice({
       })
       .addCase(deleteProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to delete product";
+        state.error = action.payload || "Потеряна связь с сервером";
       })
       .addCase(updateProducts.pending, (state) => {
         state.status = "loading";
@@ -228,7 +233,7 @@ const productsSlice = createSlice({
       })
       .addCase(updateProducts.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
-        state.error = action.payload || "Failed to update product";
+        state.error = action.payload || "Потеряна связь с сервером";
       });
   },
 });

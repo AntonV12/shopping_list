@@ -5,9 +5,13 @@ import { updateUser, UserType, setUserError } from "../users/usersSlice";
 const AddCategoryForm = ({
   currentUser,
   setIsShowAddForm,
+  handleSetActiveCategory,
+  setCategories,
 }: {
   currentUser: UserType;
   setIsShowAddForm: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSetActiveCategory: (cat: string) => void;
+  setCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const dispatch = useAppDispatch();
@@ -22,7 +26,9 @@ const AddCategoryForm = ({
     try {
       if (!inputValue) return;
       if (
-        currentUser.categories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())
+        currentUser.categories.some(
+          (category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim()
+        )
       ) {
         dispatch(setUserError("Такая категория уже есть"));
         return;
@@ -34,9 +40,22 @@ const AddCategoryForm = ({
       };
 
       await dispatch(updateUser({ user: updatedUser })).unwrap();
+      handleSetActiveCategory(inputValue);
       setInputValue("");
     } catch (error) {
       console.error(error);
+
+      const savedCategories: string[] =
+        JSON.parse(localStorage.getItem("savedCategories") as string) || currentUser.categories;
+
+      if (
+        !savedCategories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())
+      ) {
+        const updatedCategories: string[] = [/* ...currentUser.categories, */ ...savedCategories, inputValue];
+        localStorage.setItem("savedCategories", JSON.stringify(updatedCategories));
+        setCategories(updatedCategories);
+        handleSetActiveCategory(inputValue);
+      }
     } finally {
       setIsShowAddForm(false);
     }

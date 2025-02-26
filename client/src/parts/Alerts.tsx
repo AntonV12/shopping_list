@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Alert from "react-bootstrap/Alert";
 import { clearAuthError, clearAuthMessage } from "../parts/users/authSlice";
 import { clearUserMessage, clearUserError } from "./users/usersSlice";
-//import { clearProductMessage, clearProductError } from "./products/productsSlice";
+import { clearProductMessage, clearProductError } from "./products/productsSlice";
 import { useAppDispatch } from "../app/store";
 
 const Alerts = () => {
@@ -11,7 +11,7 @@ const Alerts = () => {
     (state: {
       users: { message: string | null };
       auth: { message: string | null };
-      //products: { message: string | null };
+      products: { message: string | null };
     }) => state.users.message || state.auth.message /* || state.products.message */
   );
   const error = useSelector(
@@ -19,8 +19,8 @@ const Alerts = () => {
       users: { error: string | null };
       auth: { error: string | null };
       categories: { error: string | null };
-      //products: { error: string | null };
-    }) => state.users.error || state.auth.error /* || state.products.error */
+      products: { error: string | null };
+    }) => state.users.error || state.auth.error || state.products.error
   );
   const dispatch = useAppDispatch();
 
@@ -29,16 +29,16 @@ const Alerts = () => {
       const messageTimeout = setTimeout(() => {
         dispatch(clearAuthMessage());
         dispatch(clearUserMessage());
-        //dispatch(clearProductMessage());
-      }, 2000);
+        dispatch(clearProductMessage());
+      }, 5000);
       return () => clearTimeout(messageTimeout);
     }
     if (error) {
       const errorTimeout = setTimeout(() => {
         dispatch(clearAuthError());
         dispatch(clearUserError());
-        //dispatch(clearProductError());
-      }, 2000);
+        dispatch(clearProductError());
+      }, 5000);
       return () => clearTimeout(errorTimeout);
     }
   }, [dispatch, message, error]);

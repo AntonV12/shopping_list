@@ -4,7 +4,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { ProductType } from "./productsSlice";
 import { updateProduct, deleteProduct } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
-//import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { memo, useState, useCallback } from "react";
 
 const ProductItem = ({
@@ -14,26 +14,64 @@ const ProductItem = ({
   product: ProductType;
   setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
 }) => {
-  //const isChecked = useSelector(() => product.checked);
-  const [isChecked, setIsChecked] = useState<boolean>(product.checked);
+  const isChecked = useSelector(() => product.checked);
+  const [checked, setChecked] = useState<boolean>(isChecked);
   const dispatch = useAppDispatch();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>(product.name);
+  /* const productsStatus = useSelector(
+    (state: { products: { status: "idle" | "loading" | "succeeded" | "failed" } }) => state.products.status
+  ); */
 
   const handleCheck = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsChecked(e.target.checked);
-      setProductsList((prev) => prev.map((p) => (p.id === product.id ? { ...p, checked: e.target.checked } : p)));
-      const updatedProduct = { ...product, checked: e.target.checked };
-      await dispatch(updateProduct(updatedProduct)).unwrap();
+      try {
+        setChecked(e.target.checked);
+        const updatedProduct = { ...product, checked: e.target.checked };
+        setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
+        await dispatch(updateProduct(updatedProduct)).unwrap();
+      } catch (err) {
+        console.error(err);
+
+        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+
+        if (savedProducts.some((p) => p.id === product.id)) {
+          const updatedProducts = savedProducts.map((p) =>
+            p.id === product.id ? { ...p, checked: e.target.checked } : p
+          );
+          localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+        } else {
+          localStorage.setItem(
+            "savedProducts",
+            JSON.stringify([...savedProducts, { ...product, checked: e.target.checked }])
+          );
+        }
+      }
     },
     [dispatch, product, setProductsList]
   );
 
   const handleDelete = useCallback(async () => {
-    await dispatch(deleteProduct(product.id as number)).unwrap();
-    setProductsList((prev) => prev.filter((p) => p.id !== product.id));
-  }, [dispatch, product.id, setProductsList]);
+    try {
+      await dispatch(deleteProduct(product.id as number)).unwrap();
+      setProductsList((prev) => prev.filter((p) => p.id !== product.id));
+    } catch (err) {
+      console.error(err);
+
+      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+
+      if (savedProducts.some((p) => p.id === product.id)) {
+        localStorage.setItem("savedProducts", JSON.stringify(savedProducts.filter((p) => p.id !== product.id)));
+      }
+
+      if (!deletedProducts.some((p: ProductType) => p.id === product.id)) {
+        localStorage.setItem("deletedProducts", JSON.stringify([...deletedProducts, product]));
+      }
+
+      setProductsList((prev) => prev.filter((p) => p.id !== product.id));
+    }
+  }, [dispatch, product, setProductsList]);
 
   const onShowEdit = useCallback(() => {
     setIsEdit(true);
@@ -44,8 +82,9 @@ const ProductItem = ({
   }, []);
 
   const handleEdit = useCallback(
-    (e: React.ChangeEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      const updatedProduct = { ...product, name: inputValue };
 
       try {
         if (inputValue === product.name || inputValue.trim() === "") {
@@ -53,22 +92,31 @@ const ProductItem = ({
           return;
         }
 
-        const updatedProduct = { ...product, name: inputValue };
-        dispatch(updateProduct(updatedProduct));
+        setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
+        await dispatch(updateProduct(updatedProduct)).unwrap();
         setIsEdit(false);
       } catch (error) {
+        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+
+        if (savedProducts.some((p) => p.id === updatedProduct.id)) {
+          const updatedProducts = savedProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p));
+          localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+        } else {
+          localStorage.setItem("savedProducts", JSON.stringify([...savedProducts, updatedProduct]));
+        }
+        setIsEdit(false);
         console.error(error);
       }
     },
-    [dispatch, inputValue, product]
+    [dispatch, inputValue, product, setProductsList]
   );
 
   return (
     <>
       <ListGroup.Item
         className="d-flex align-items-center p-0 ps-3 rounded shadow-lg"
-        style={isChecked ? { textDecoration: "line-through", color: "grey" } : {}}
-        variant={isChecked ? "secondary" : "light"}
+        style={checked ? { textDecoration: "line-through", color: "grey" } : {}}
+        variant={checked ? "secondary" : "light"}
       >
         <input
           id={product.id?.toString()}
@@ -76,7 +124,7 @@ const ProductItem = ({
           className="form-check-input m-0"
           style={{ width: "25px", height: "25px" }}
           onChange={handleCheck}
-          checked={isChecked}
+          checked={checked}
         />
         {isEdit ? (
           <form className="ps-3 w-100 d-flex align-items-center" onSubmit={handleEdit}>

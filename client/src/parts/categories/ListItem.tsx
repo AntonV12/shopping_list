@@ -14,6 +14,9 @@ const ListItem = ({
   setCategory,
   isFirstElement,
   currentUser,
+  categories,
+  setProductsList,
+  setCategories,
 }: {
   cat: string;
   handleSetActiveCategory: (cat: string) => void;
@@ -21,6 +24,9 @@ const ListItem = ({
   setCategory: React.Dispatch<React.SetStateAction<string>>;
   isFirstElement: boolean;
   currentUser: UserType;
+  setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
+  setCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  categories: string[];
 }) => {
   const dispatch = useAppDispatch();
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -32,6 +38,8 @@ const ListItem = ({
 
   const handleDeleteCategory = async (cat: string) => {
     const confirm = window.confirm("Вы уверены, что хотите удалить эту категорию?");
+    setCategory(cat);
+    handleSetActiveCategory(cat);
     if (confirm) {
       try {
         const updatedUser: UserType = {
@@ -47,6 +55,25 @@ const ListItem = ({
         handleSetActiveCategory("Все");
       } catch (error) {
         console.error(error);
+
+        const deletedCategories: string[] =
+          JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+        deletedCategories.push(cat);
+        const savedProducts: ProductType[] =
+          JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+
+        const deletedProducts: ProductType[] = savedProducts.filter((product) => product.category === cat);
+
+        if (deletedCategories.length > 0) {
+          const updatedCategories: string[] = categories.filter((c) => !deletedCategories.includes(c));
+          setCategories(updatedCategories);
+          const updatedProducts: ProductType[] = savedProducts.filter(
+            (product) => !deletedCategories.includes(product.category)
+          );
+          localStorage.setItem("deletedCategories", JSON.stringify(deletedCategories));
+          localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+          localStorage.setItem("deletedProducts", JSON.stringify(deletedProducts));
+        }
       }
     }
   };
@@ -59,18 +86,26 @@ const ListItem = ({
     //setWidth(ref.current?.offsetWidth || 0);
     setIsEdit(true);
     setInputValue(cat);
+    handleSetActiveCategory(cat);
+    setCategory(cat);
   };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       if (!inputValue) return;
-      if (currentUser.categories.some((c) => c.toLowerCase().trim() === inputValue.toLowerCase().trim() && c !== cat)) {
+      if (
+        currentUser.categories.some(
+          (c) => c.toLowerCase().trim() === inputValue.toLowerCase().trim() && c !== cat
+        )
+      ) {
         dispatch(setUserError("Такая категория уже есть"));
         return;
       }
       if (inputValue === cat) {
         setIsEdit(false);
+        handleSetActiveCategory(inputValue);
+        setCategory(inputValue);
         return;
       }
       const updatedUser: UserType = {
@@ -83,13 +118,35 @@ const ListItem = ({
 
       await dispatch(updateUser({ user: updatedUser })).unwrap();
       await dispatch(updateProducts({ products: updatedProducts })).unwrap();
+      //setCategory(inputValue);
+      //handleSetActiveCategory(inputValue);
+      //setIsEdit(false);
+    } catch (error) {
+      console.error(error);
+
+      const savedProducts: ProductType[] =
+        JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+      const savedCategories: string[] =
+        JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
+
+      const updatedCategories: string[] = savedCategories.map((c) => (c === category ? inputValue : c));
+      const updatedProducts: ProductType[] = savedProducts.map((product) =>
+        product.category === category ? { ...product, category: inputValue } : product
+      );
+
+      localStorage.setItem("savedCategories", JSON.stringify(updatedCategories));
+      localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+
+      setCategories(updatedCategories);
+      setProductsList(updatedProducts);
+      //setCategory(inputValue);
+      //handleSetActiveCategory(inputValue);
+      //setIsEdit(false);
+    } finally {
+      setIsShowControl(false);
       setCategory(inputValue);
       handleSetActiveCategory(inputValue);
       setIsEdit(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsShowControl(false);
     }
   };
 
@@ -137,7 +194,14 @@ const ListItem = ({
                 active={cat === category}
                 onClick={() => handleSetActiveCategory(cat as string)}
               >
-                <p className="m-0 me-2" style={{ maxWidth: "10rem", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <p
+                  className="m-0 me-2"
+                  style={{
+                    maxWidth: "10rem",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
                   {cat}
                 </p>
               </Button>

@@ -97,7 +97,7 @@ export const updateUser = createAsyncThunk<
     return await response.json();
   } catch (err) {
     if (err instanceof Error) {
-      return rejectWithValue(err.message);
+      return rejectWithValue("Ошибка обновления. Сервер не отвечает");
     } else {
       return rejectWithValue("Failed to save user");
     }

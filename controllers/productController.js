@@ -50,7 +50,7 @@ export const updateProduct = async (req, res) => {
   try {
     const sql = "UPDATE products SET name = ?, category = ?, checked = ?, author_id = ? WHERE author_id = ? AND id = ?";
     const [results] = await pool.execute(sql, [name, category, checked, author_id, author_id, id]);
-    res.send({ id, name, category, checked, author_id });
+    res.json({ id, name, category, checked, author_id });
   } catch (err) {
     console.error("Ошибка при обновлении продукта", err);
     res.status(500).send("Ошибка при обновлении продукта");

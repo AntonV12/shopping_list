@@ -12,16 +12,22 @@ import { ProductType } from "./productsSlice";
 
 const NewProductForm = ({
   setProductsList,
+  products,
 }: {
   setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
+  products: ProductType[];
 }) => {
   const [name, setName] = useState<string>("");
   const [validated, setValidated] = useState<boolean>(false);
-  const error = useSelector((state: { products: { error: string | null } }) => state.products.error);
+  //const error = useSelector((state: { products: { error: string | null } }) => state.products.error);
+  const [error, setError] = useState<string | null>(null);
   const message = useSelector((state: { products: { message: string | null } }) => state.products.message);
   const dispatch = useAppDispatch();
   const currentUserId = useSelector(selectCurrentUserId);
   const inputRef = useRef<HTMLInputElement>(null);
+  const productsStatus = useSelector(
+    (state: { products: { status: "idle" | "loading" | "succeeded" | "failed" } }) => state.products.status
+  );
 
   const scrollToElement = (elem: HTMLElement) => {
     elem.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -41,23 +47,34 @@ const NewProductForm = ({
     }
     setValidated(true);
 
+    if (!name) {
+      return;
+    }
+
+    const category = localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "";
+    const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+    const newId = Math.max(
+      (products[products.length - 1]?.id ?? 0) + 1,
+      (savedProducts[savedProducts.length - 1]?.id ?? 0) + 1
+    );
+
+    const newProduct = {
+      id: newId,
+      name: name,
+      category: category,
+      checked: false,
+      author_id: currentUserId as number,
+    };
+
     try {
-      const category = localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "";
-
-      const newProduct = {
-        id: null,
-        name: name,
-        category: category,
-        checked: false,
-        author_id: currentUserId as number,
-      };
-      setProductsList((prev) => {
-        return [...prev, { ...newProduct, id: (prev[prev.length - 1]?.id ?? 0) + 1 }];
-      });
-
-      await dispatch(addProduct(newProduct)).unwrap();
+      if (!products.some((p) => p.name === newProduct.name)) {
+        setProductsList((prev) => {
+          return [...prev, { ...newProduct, id: (prev[prev.length - 1]?.id ?? 0) + 1 }];
+        });
+      }
 
       setName("");
+      await dispatch(addProduct(newProduct)).unwrap();
       dispatch(clearProductError());
       setValidated(false);
       if (inputRef.current) {
@@ -67,17 +84,47 @@ const NewProductForm = ({
       await dispatch(fetchProducts(currentUserId as number)).unwrap();
       await dispatch(fetchUsers()).unwrap();
     } catch (error) {
-      console.error(error);
+      if (products.some((p) => p.name === newProduct.name)) {
+        setError("Такой продукт уже существует");
+        return;
+      }
+
+      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+
+      // const updatedProducts = savedProducts.some((p) => p.id === newProduct.id)
+      //   ? savedProducts.map((p) => (p.id === newProduct.id ? newProduct : p))
+      //   : [...savedProducts, newProduct];
+
+      if (deletedProducts.some((p) => p.id === newProduct.id)) {
+        localStorage.setItem("deletedProducts", JSON.stringify(deletedProducts.filter((p) => p.id !== newProduct.id)));
+      }
+
+      if (!savedProducts.some((p: ProductType) => p.id === newProduct.id)) {
+        localStorage.setItem("savedProducts", JSON.stringify([...savedProducts, newProduct]));
+      }
+
+      //localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+
+      setName("");
+      setError("Ошибка добавления продукта. Сервер не отвечает");
+      console.error("Ошибка добавления продукта", error);
+    } finally {
+      inputRef.current?.focus();
     }
   };
 
   const clearAlerts = () => {
-    if (error) {
-      dispatch(clearProductError());
-    }
-    if (message) {
-      dispatch(clearProductMessage());
-    }
+    const timeout = setTimeout(() => {
+      if (error) {
+        dispatch(clearProductError());
+        setError(null);
+      }
+      if (message) {
+        dispatch(clearProductMessage());
+      }
+    }, 5000);
+
+    return () => clearInterval(timeout);
   };
 
   return (
@@ -99,6 +146,7 @@ const NewProductForm = ({
                 isInvalid={error !== null}
                 autoComplete="off"
                 ref={inputRef}
+                disabled={productsStatus === "loading"}
               />
             </div>
           </Form.Group>
@@ -112,6 +160,7 @@ const NewProductForm = ({
           variant="light"
           className="bg-gradient bg-dark-subtle text-primary-emphasis d-flex align-items-center justify-content-center pt-2"
           type="submit"
+          disabled={productsStatus === "loading"}
         >
           добавить
         </Button>
