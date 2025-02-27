@@ -1,6 +1,6 @@
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   ProductType,
@@ -16,6 +16,7 @@ import CategoriesList from "../categories/CategoriesList";
 import { selectCurrentUserId } from "../users/authSlice";
 import { selectUserById, UserType, fetchUsers } from "../users/usersSlice";
 import NewProductForm from "./NewProductForm";
+import ProductsSyncButton from "./ProductsSyncButton";
 
 const ProductsList = () => {
   const [productsList, setProductsList] = useState<ProductType[]>([]);
@@ -30,7 +31,7 @@ const ProductsList = () => {
     selectUserById(state, currentUserId as number)
   );
   //const categories = currentUser?.categories;
-  const [categories, setCategories] = useState<string[]>(currentUser?.categories || []);
+  const [categories, setCategories] = useState<string[]>([]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
     localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "Все"
@@ -54,6 +55,12 @@ const ProductsList = () => {
 
     dispatch(fetchProducts(currentUserId as number)).unwrap();
   }, [dispatch, currentUserId]);
+
+  useEffect(() => {
+    if (currentUser) {
+      setCategories(currentUser?.categories);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (products.length === 0) return;
@@ -102,14 +109,18 @@ const ProductsList = () => {
 
   return (
     <div className="products-list w-100">
-      <CategoriesList
-        category={selectedCategory}
-        setCategory={setSelectedCategory}
-        categories={categories}
-        setCategories={setCategories}
-        isFirstElement={false}
-        setProductsList={setProductsList}
-      />
+      <div className="d-flex align-items-center">
+        <ProductsSyncButton setSelectedCategory={setSelectedCategory} />
+
+        <CategoriesList
+          category={selectedCategory}
+          setCategory={setSelectedCategory}
+          categories={categories}
+          setCategories={setCategories}
+          isFirstElement={false}
+          setProductsList={setProductsList}
+        />
+      </div>
 
       {sortedList.length === 0 && selectedCategory === "Все" && (
         <p className="text-center">Список покупок пуст...</p>
@@ -150,7 +161,7 @@ const ProductsList = () => {
         <p className="mt-3 text-secondary">Чтобы добавить продукт, выберите категорию</p>
       )}
 
-      <div className="w-100 mb-3 text-end">
+      <div className="w-100 mb-3 d-flex justify-content-between">
         <Button id="clear-btn" variant="link" className="text-dark-emphasis p-0" onClick={handleClearList}>
           Очистить список
         </Button>
@@ -159,4 +170,4 @@ const ProductsList = () => {
   );
 };
 
-export default memo(ProductsList);
+export default ProductsList;

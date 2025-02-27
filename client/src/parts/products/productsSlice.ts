@@ -123,33 +123,34 @@ export const deleteProduct = createAsyncThunk<number, number, { rejectValue: Err
   }
 );
 
-export const updateProducts = createAsyncThunk<ProductType[], { products: ProductType[] }, { rejectValue: ErrorType }>(
-  "products/updateProducts",
-  async (products, { rejectWithValue }) => {
-    try {
-      const response = await fetch(`/products/update`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(products),
-        credentials: "include",
-      });
+export const updateProducts = createAsyncThunk<
+  ProductType[],
+  { products: ProductType[] },
+  { rejectValue: ErrorType }
+>("products/updateProducts", async (products, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`/products/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(products),
+      credentials: "include",
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to save user");
-      }
-
-      return await response.json();
-    } catch (err) {
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      }
-      return rejectWithValue("Failed to save user");
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to save user");
     }
+
+    return await response.json();
+  } catch (err) {
+    if (err instanceof Error) {
+      return rejectWithValue(err.message);
+    }
+    return rejectWithValue("Failed to save user");
   }
-);
+});
 
 const initialState: ProductState = {
   products: [],
@@ -197,14 +198,14 @@ const productsSlice = createSlice({
       .addCase(updateProduct.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(updateProduct.fulfilled, (state /*,  action: PayloadAction<ProductType> */) => {
+      .addCase(updateProduct.fulfilled, (state, action: PayloadAction<ProductType>) => {
         state.status = "succeeded";
 
-        // const index = state.products.findIndex((p) => Number(p.id) === Number(action.payload.id));
+        const index = state.products.findIndex((p) => Number(p.id) === Number(action.payload.id));
 
-        // if (index !== -1) {
-        //   state.products[index] = action.payload;
-        // }
+        if (index !== -1) {
+          state.products[index] = action.payload;
+        }
       })
       .addCase(updateProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
@@ -240,6 +241,7 @@ const productsSlice = createSlice({
 
 export default productsSlice.reducer;
 export const { clearProductError, clearProductMessage } = productsSlice.actions;
-export const selectAllProducts = (state: { products: { products: ProductType[] } }) => state.products.products;
+export const selectAllProducts = (state: { products: { products: ProductType[] } }) =>
+  state.products.products;
 export const selectProductById = (state: { products: { products: ProductType[] } }, productId: number) =>
   state.products.products.find((product) => product.id === productId);

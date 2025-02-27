@@ -89,7 +89,7 @@ const CategoriesList = ({
   }
 
   return (
-    <div className="d-flex flex-wrap mb-2 justify-content-start">
+    <div className="d-flex flex-wrap justify-content-start align-items-center">
       {categories?.map((cat, index) => {
         const isHidden = isFirstElement && cat === "Все";
         return (

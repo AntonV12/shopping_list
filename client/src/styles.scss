@@ -196,3 +196,23 @@ footer {
     }
   }
 }
+
+.reload-btn {
+  border: none !important;
+
+  svg {
+    &:hover {
+      color: #052c65 !important;
+    }
+    transition: transform 1s ease;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -5,7 +5,7 @@ import { ProductType } from "./productsSlice";
 import { updateProduct, deleteProduct } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
-import { memo, useState, useCallback } from "react";
+import { memo, useState, useCallback, useEffect } from "react";
 
 const ProductItem = ({
   product,
@@ -18,10 +18,15 @@ const ProductItem = ({
   const [checked, setChecked] = useState<boolean>(isChecked);
   const dispatch = useAppDispatch();
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>(product.name);
+  const [inputValue, setInputValue] = useState<string>("");
   /* const productsStatus = useSelector(
     (state: { products: { status: "idle" | "loading" | "succeeded" | "failed" } }) => state.products.status
   ); */
+
+  useEffect(() => {
+    setInputValue(product.name);
+    setChecked(product.checked);
+  }, [product]);
 
   const handleCheck = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +38,8 @@ const ProductItem = ({
       } catch (err) {
         console.error(err);
 
-        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+        const savedProducts: ProductType[] =
+          JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
         if (savedProducts.some((p) => p.id === product.id)) {
           const updatedProducts = savedProducts.map((p) =>
@@ -58,11 +64,15 @@ const ProductItem = ({
     } catch (err) {
       console.error(err);
 
-      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedProducts: ProductType[] =
+        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
       const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
       if (savedProducts.some((p) => p.id === product.id)) {
-        localStorage.setItem("savedProducts", JSON.stringify(savedProducts.filter((p) => p.id !== product.id)));
+        localStorage.setItem(
+          "savedProducts",
+          JSON.stringify(savedProducts.filter((p) => p.id !== product.id))
+        );
       }
 
       if (!deletedProducts.some((p: ProductType) => p.id === product.id)) {
@@ -96,7 +106,8 @@ const ProductItem = ({
         await dispatch(updateProduct(updatedProduct)).unwrap();
         setIsEdit(false);
       } catch (error) {
-        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+        const savedProducts: ProductType[] =
+          JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
         if (savedProducts.some((p) => p.id === updatedProduct.id)) {
           const updatedProducts = savedProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p));

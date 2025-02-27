@@ -6,7 +6,6 @@ import { fetchCurrentUser, selectCurrentUserId } from "../parts/users/authSlice"
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "./store";
 import ProductsList from "../parts/products/ProductsList";
-import ProductsSyncButton from "../parts/products/ProductsSyncButton";
 
 function Root() {
   const [isModalShow, setIsModalShow] = useState<boolean>(false);
@@ -34,9 +33,9 @@ function Root() {
           {!currentUserId ? (
             <section>
               <p className="text-dark-emphasis mt-3">
-                Сервис для управления семейным списком покупок. Вы можете разделить свой список покупок на категории.
-                Общий аккаунт для всей семьи позволит планировать покупки. Просто добавьте товары в желаемую категорию и
-                вся семья будет знать, что нужно купить.
+                Сервис для управления семейным списком покупок. Вы можете разделить свой список покупок на
+                категории. Общий аккаунт для всей семьи позволит планировать покупки. Просто добавьте товары в
+                желаемую категорию и вся семья будет знать, что нужно купить.
               </p>
             </section>
           ) : (
@@ -45,8 +44,6 @@ function Root() {
               <ProductsList />
             </>
           )}
-
-          <ProductsSyncButton />
         </main>
 
         <Alerts />

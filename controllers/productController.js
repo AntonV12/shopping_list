@@ -48,7 +48,8 @@ export const updateProduct = async (req, res) => {
   const { name, category, checked, author_id } = req.body;
 
   try {
-    const sql = "UPDATE products SET name = ?, category = ?, checked = ?, author_id = ? WHERE author_id = ? AND id = ?";
+    const sql =
+      "UPDATE products SET name = ?, category = ?, checked = ?, author_id = ? WHERE author_id = ? AND id = ?";
     const [results] = await pool.execute(sql, [name, category, checked, author_id, author_id, id]);
     res.json({ id, name, category, checked, author_id });
   } catch (err) {

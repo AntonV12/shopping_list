@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef } from "react";
+import React, { memo, useState, useRef, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { updateProducts } from "../products/productsSlice";
@@ -35,6 +35,10 @@ const ListItem = ({
   const ref = useRef<HTMLDivElement>(null);
   //const [width, setWidth] = useState<number>(ref.current?.offsetWidth || 0);
   const [isShowControl, setIsShowControl] = useState<boolean>(false);
+
+  useEffect(() => {
+    setInputValue(cat);
+  }, [cat]);
 
   const handleDeleteCategory = async (cat: string) => {
     const confirm = window.confirm("Вы уверены, что хотите удалить эту категорию?");
@@ -202,7 +206,7 @@ const ListItem = ({
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {cat}
+                  {inputValue}
                 </p>
               </Button>
               {cat !== "Все" /* && cat === category */ && isShowControl && (
