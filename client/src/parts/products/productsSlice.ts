@@ -198,14 +198,14 @@ const productsSlice = createSlice({
       .addCase(updateProduct.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(updateProduct.fulfilled, (state, action: PayloadAction<ProductType>) => {
+      .addCase(updateProduct.fulfilled, (state /* , action: PayloadAction<ProductType> */) => {
         state.status = "succeeded";
 
-        const index = state.products.findIndex((p) => Number(p.id) === Number(action.payload.id));
+        /*  const index = state.products.findIndex((p) => Number(p.id) === Number(action.payload.id));
 
         if (index !== -1) {
           state.products[index] = action.payload;
-        }
+        } */
       })
       .addCase(updateProduct.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
