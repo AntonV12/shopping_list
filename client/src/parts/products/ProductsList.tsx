@@ -109,7 +109,7 @@ const ProductsList = () => {
 
   return (
     <div className="products-list w-100">
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-center mb-2">
         <ProductsSyncButton setSelectedCategory={setSelectedCategory} />
 
         <CategoriesList

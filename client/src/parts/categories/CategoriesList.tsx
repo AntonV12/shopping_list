@@ -107,7 +107,7 @@ const CategoriesList = ({
           />
         );
       })}
-      <div className="d-flex align-items-center justify-content-center mb-2">
+      <div className="d-flex align-items-center justify-content-center">
         {isShowAddForm && currentUser ? (
           <AddCategoryForm
             currentUser={currentUser}
