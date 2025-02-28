@@ -11,7 +11,9 @@ function Root() {
   const [isModalShow, setIsModalShow] = useState<boolean>(false);
   const currentUserId = useSelector(selectCurrentUserId);
   const dispatch = useAppDispatch();
-  const authStatus = useSelector((state: { auth: { status: string } }) => state.auth.status);
+  const authStatus = useSelector(
+    (state: { auth: { status: "idle" | "loading" | "succeeded" | "failed" } }) => state.auth.status
+  );
 
   useEffect(() => {
     if (!currentUserId) {
@@ -22,6 +24,10 @@ function Root() {
   const handleShowModal = () => setIsModalShow(true);
   const handleCloseModal = () => setIsModalShow(false);
 
+  if (authStatus === "loading") {
+    return <div className="text-center position-absolute top-50 start-50 translate-middle">Загрузка...</div>;
+  }
+
   return (
     <div id="wrapper" className="d-flex flex-column">
       <header className="mb-3">
@@ -30,7 +36,7 @@ function Root() {
 
       <div className="container position-relative flex-grow-1">
         <main className="d-flex flex-column justify-content-center align-items-center w-100">
-          {!currentUserId ? (
+          {!currentUserId && authStatus === "failed" ? (
             <section>
               <p className="text-dark-emphasis mt-3">
                 Сервис для управления семейным списком покупок. Вы можете разделить свой список покупок на
@@ -40,7 +46,6 @@ function Root() {
             </section>
           ) : (
             <>
-              {authStatus === "loading" && <p>Загрузка...</p>}
               <ProductsList />
             </>
           )}

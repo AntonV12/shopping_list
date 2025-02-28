@@ -8,13 +8,13 @@ export type ProductType = {
   author_id: number;
 };
 
-export type statusType = "idle" | "loading" | "succeeded" | "failed";
+export type statusType = "idle" | "fetching" | "loading" | "succeeded" | "failed";
 
 export type ErrorType = string | null;
 
 interface ProductState {
   products: ProductType[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  status: statusType;
   error: ErrorType;
   message: string | null;
 }
@@ -185,7 +185,7 @@ const productsSlice = createSlice({
         state.error = action.payload || "Потеряна связь с сервером";
       })
       .addCase(fetchProducts.pending, (state) => {
-        state.status = "loading";
+        state.status = "fetching";
       })
       .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<ProductType[]>) => {
         state.status = "succeeded";
