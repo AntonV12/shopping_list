@@ -19,9 +19,6 @@ const ProductItem = ({
   const dispatch = useAppDispatch();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
-  /* const productsStatus = useSelector(
-    (state: { products: { status: "idle" | "loading" | "succeeded" | "failed" } }) => state.products.status
-  ); */
 
   useEffect(() => {
     setInputValue(product.name);
@@ -33,13 +30,13 @@ const ProductItem = ({
       try {
         setChecked(e.target.checked);
         const updatedProduct = { ...product, checked: e.target.checked };
+
         setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
         await dispatch(updateProduct(updatedProduct)).unwrap();
       } catch (err) {
         console.error(err);
 
-        const savedProducts: ProductType[] =
-          JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
         if (savedProducts.some((p) => p.id === product.id)) {
           const updatedProducts = savedProducts.map((p) =>
@@ -59,20 +56,16 @@ const ProductItem = ({
 
   const handleDelete = useCallback(async () => {
     try {
-      await dispatch(deleteProduct(product.id as number)).unwrap();
       setProductsList((prev) => prev.filter((p) => p.id !== product.id));
+      await dispatch(deleteProduct(product.id as number)).unwrap();
     } catch (err) {
       console.error(err);
 
-      const deletedProducts: ProductType[] =
-        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
       const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
       if (savedProducts.some((p) => p.id === product.id)) {
-        localStorage.setItem(
-          "savedProducts",
-          JSON.stringify(savedProducts.filter((p) => p.id !== product.id))
-        );
+        localStorage.setItem("savedProducts", JSON.stringify(savedProducts.filter((p) => p.id !== product.id)));
       }
 
       if (!deletedProducts.some((p: ProductType) => p.id === product.id)) {
@@ -91,36 +84,32 @@ const ProductItem = ({
     setInputValue(e.target.value);
   }, []);
 
-  const handleEdit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const updatedProduct = { ...product, name: inputValue };
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const updatedProduct = { ...product, name: inputValue };
 
-      try {
-        if (inputValue === product.name || inputValue.trim() === "") {
-          setIsEdit(false);
-          return;
-        }
-
-        setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
-        await dispatch(updateProduct(updatedProduct)).unwrap();
+    try {
+      if (inputValue === product.name || inputValue.trim() === "") {
         setIsEdit(false);
-      } catch (error) {
-        const savedProducts: ProductType[] =
-          JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-
-        if (savedProducts.some((p) => p.id === updatedProduct.id)) {
-          const updatedProducts = savedProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p));
-          localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
-        } else {
-          localStorage.setItem("savedProducts", JSON.stringify([...savedProducts, updatedProduct]));
-        }
-        setIsEdit(false);
-        console.error(error);
+        return;
       }
-    },
-    [dispatch, inputValue, product, setProductsList]
-  );
+
+      setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
+      await dispatch(updateProduct(updatedProduct)).unwrap();
+      setIsEdit(false);
+    } catch (error) {
+      const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+
+      if (savedProducts.some((p) => p.id === updatedProduct.id)) {
+        const updatedProducts = savedProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p));
+        localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+      } else {
+        localStorage.setItem("savedProducts", JSON.stringify([...savedProducts, updatedProduct]));
+      }
+      setIsEdit(false);
+      console.error(error);
+    }
+  };
 
   return (
     <>

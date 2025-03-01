@@ -30,7 +30,7 @@ const Alerts = () => {
         dispatch(clearAuthMessage());
         dispatch(clearUserMessage());
         dispatch(clearProductMessage());
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(messageTimeout);
     }
     if (error) {
@@ -38,7 +38,7 @@ const Alerts = () => {
         dispatch(clearAuthError());
         dispatch(clearUserError());
         dispatch(clearProductError());
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(errorTimeout);
     }
   }, [dispatch, message, error]);

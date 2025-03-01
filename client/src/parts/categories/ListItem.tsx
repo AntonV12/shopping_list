@@ -15,6 +15,7 @@ const ListItem = ({
   isFirstElement,
   currentUser,
   categories,
+  productsList,
   setProductsList,
   setCategories,
 }: {
@@ -24,6 +25,7 @@ const ListItem = ({
   setCategory: React.Dispatch<React.SetStateAction<string>>;
   isFirstElement: boolean;
   currentUser: UserType;
+  productsList: ProductType[];
   setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
   setCategories: React.Dispatch<React.SetStateAction<string[]>>;
   categories: string[];
@@ -33,7 +35,6 @@ const ListItem = ({
   const [inputValue, setInputValue] = useState<string>("");
   const products: ProductType[] = useSelector(selectAllProducts);
   const ref = useRef<HTMLDivElement>(null);
-  //const [width, setWidth] = useState<number>(ref.current?.offsetWidth || 0);
   const [isShowControl, setIsShowControl] = useState<boolean>(false);
 
   useEffect(() => {
@@ -60,11 +61,9 @@ const ListItem = ({
       } catch (error) {
         console.error(error);
 
-        const deletedCategories: string[] =
-          JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+        const deletedCategories: string[] = JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
         deletedCategories.push(cat);
-        const savedProducts: ProductType[] =
-          JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || products;
 
         const deletedProducts: ProductType[] = savedProducts.filter((product) => product.category === cat);
 
@@ -87,7 +86,6 @@ const ListItem = ({
   };
 
   const onShowEdit = () => {
-    //setWidth(ref.current?.offsetWidth || 0);
     setIsEdit(true);
     setInputValue(cat);
     handleSetActiveCategory(cat);
@@ -98,11 +96,7 @@ const ListItem = ({
     e.preventDefault();
     try {
       if (!inputValue) return;
-      if (
-        currentUser.categories.some(
-          (c) => c.toLowerCase().trim() === inputValue.toLowerCase().trim() && c !== cat
-        )
-      ) {
+      if (currentUser.categories.some((c) => c.toLowerCase().trim() === inputValue.toLowerCase().trim() && c !== cat)) {
         dispatch(setUserError("Такая категория уже есть"));
         return;
       }
@@ -112,26 +106,22 @@ const ListItem = ({
         setCategory(inputValue);
         return;
       }
+
       const updatedUser: UserType = {
         ...currentUser,
         categories: currentUser.categories.map((c: string) => (c === cat ? inputValue : c)),
       };
-      const updatedProducts: ProductType[] = products.map((product) =>
+      const updatedProducts: ProductType[] = productsList.map((product) =>
         product.category === cat ? { ...product, category: inputValue } : product
       );
 
       await dispatch(updateUser({ user: updatedUser })).unwrap();
       await dispatch(updateProducts({ products: updatedProducts })).unwrap();
-      //setCategory(inputValue);
-      //handleSetActiveCategory(inputValue);
-      //setIsEdit(false);
     } catch (error) {
       console.error(error);
 
-      const savedProducts: ProductType[] =
-        JSON.parse(localStorage.getItem("savedProducts") as string) || products;
-      const savedCategories: string[] =
-        JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
+      const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+      const savedCategories: string[] = JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
 
       const updatedCategories: string[] = savedCategories.map((c) => (c === category ? inputValue : c));
       const updatedProducts: ProductType[] = savedProducts.map((product) =>
@@ -143,9 +133,6 @@ const ListItem = ({
 
       setCategories(updatedCategories);
       setProductsList(updatedProducts);
-      //setCategory(inputValue);
-      //handleSetActiveCategory(inputValue);
-      //setIsEdit(false);
     } finally {
       setIsShowControl(false);
       setCategory(inputValue);
@@ -162,7 +149,7 @@ const ListItem = ({
             <form
               onSubmit={handleSubmit}
               className="d-flex p-1 align-items-center rounded "
-              style={{ /* maxWidth: width, */ backgroundColor: "#052c65" }}
+              style={{ backgroundColor: "#052c65" }}
             >
               <input
                 type="text"
@@ -189,7 +176,7 @@ const ListItem = ({
             <ButtonGroup
               ref={ref}
               className="position-relative"
-              onMouseOver={() => setIsShowControl(true)}
+              onMouseEnter={() => setIsShowControl(true)}
               onMouseLeave={() => setIsShowControl(false)}
             >
               <Button
@@ -209,12 +196,10 @@ const ListItem = ({
                   {inputValue}
                 </p>
               </Button>
-              {cat !== "Все" /* && cat === category */ && isShowControl && (
+              {cat !== "Все" && cat === category && isShowControl && (
                 <Button
                   variant="light"
                   className="control-btn d-flex align-items-center buttons-block text-primary-emphasis rounded-1 position-absolute"
-                  onMouseOver={() => setIsShowControl(true)}
-                  onMouseLeave={() => setIsShowControl(false)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

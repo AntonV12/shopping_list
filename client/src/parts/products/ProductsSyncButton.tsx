@@ -1,8 +1,8 @@
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
-import { fetchProducts } from "./productsSlice";
+import { fetchProducts, ProductType } from "./productsSlice";
 import { selectCurrentUserId } from "../users/authSlice";
-import { fetchUsers } from "../users/usersSlice";
+import { fetchUsers, UserType } from "../users/usersSlice";
 import Button from "react-bootstrap/Button";
 import { useState, useRef } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -10,8 +10,12 @@ import Tooltip from "react-bootstrap/Tooltip";
 
 const ProductsSyncButton = ({
   setSelectedCategory,
+  setProductsList,
+  setCategories,
 }: {
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
+  setCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
   const dispatch = useAppDispatch();
   const currentUserId: number | null = useSelector(selectCurrentUserId);
@@ -26,8 +30,11 @@ const ProductsSyncButton = ({
       }
 
       if (currentUserId) {
-        await dispatch(fetchUsers()).unwrap();
-        await dispatch(fetchProducts(currentUserId)).unwrap();
+        const newUsers: UserType[] = await dispatch(fetchUsers()).unwrap();
+        const newProducts: ProductType[] = await dispatch(fetchProducts(currentUserId)).unwrap();
+        setCategories(newUsers.find((user) => user.id === currentUserId)?.categories || []);
+        setProductsList(newProducts);
+
         const updatedCategories: string[] =
           (await dispatch(fetchUsers()).unwrap()).find((user) => user.id === currentUserId)?.categories || [];
 
@@ -65,12 +72,7 @@ const ProductsSyncButton = ({
           </Tooltip>
         }
       >
-        <Button
-          variant="none"
-          className="reload-btn"
-          onClick={handleSync}
-          disabled={requestStatus === "pending"}
-        >
+        <Button variant="none" className="reload-btn" onClick={handleSync} disabled={requestStatus === "pending"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"

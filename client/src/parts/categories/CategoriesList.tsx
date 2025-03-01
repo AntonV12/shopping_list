@@ -5,7 +5,7 @@ import AddCategoryForm from "./AddCategoryForm";
 import { selectCurrentUserId } from "../users/authSlice";
 import { selectUserById, UserType, updateUser } from "../users/usersSlice";
 import Button from "react-bootstrap/Button";
-import { ProductType, /* updateProducts, */ deleteProduct } from "../products/productsSlice";
+import { ProductType, deleteProduct } from "../products/productsSlice";
 import { useAppDispatch } from "../../app/store";
 
 const CategoriesList = ({
@@ -14,6 +14,7 @@ const CategoriesList = ({
   categories,
   setCategories,
   isFirstElement,
+  productsList,
   setProductsList,
 }: {
   category: string;
@@ -21,6 +22,7 @@ const CategoriesList = ({
   categories: string[];
   setCategories: React.Dispatch<React.SetStateAction<string[]>>;
   isFirstElement: boolean;
+  productsList: ProductType[];
   setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
 }) => {
   const [isShowAddForm, setIsShowAddForm] = useState<boolean>(false);
@@ -36,11 +38,8 @@ const CategoriesList = ({
       setStatus("pending");
 
       const savedCategories: string[] = JSON.parse(localStorage.getItem("savedCategories") as string) || [];
-      //const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-      const deletedProducts: ProductType[] =
-        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
-      const deletedCategories: string[] =
-        JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedCategories: string[] = JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
 
       if (deletedProducts.length > 0) {
         for (const product of deletedProducts) {
@@ -50,7 +49,7 @@ const CategoriesList = ({
         localStorage.removeItem("deletedProducts");
       }
 
-      if (savedCategories.length > 0 /* || savedProducts.length > 0 */ || deletedCategories.length > 0) {
+      if (savedCategories.length > 0 || deletedCategories.length > 0) {
         if (currentUser) {
           const updatedCategories: string[] = savedCategories.filter((c) => !deletedCategories.includes(c));
 
@@ -101,6 +100,7 @@ const CategoriesList = ({
             category={category}
             setCategory={setCategory}
             isFirstElement={isHidden}
+            productsList={productsList}
             setProductsList={setProductsList}
             categories={categories}
             setCategories={setCategories}

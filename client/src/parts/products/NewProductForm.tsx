@@ -1,7 +1,7 @@
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/esm/Button";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { addProduct, clearProductError, clearProductMessage, fetchProducts } from "./productsSlice";
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
@@ -19,15 +19,17 @@ const NewProductForm = ({
 }) => {
   const [name, setName] = useState<string>("");
   const [validated, setValidated] = useState<boolean>(false);
-  //const error = useSelector((state: { products: { error: string | null } }) => state.products.error);
   const [error, setError] = useState<string | null>(null);
   const message = useSelector((state: { products: { message: string | null } }) => state.products.message);
   const dispatch = useAppDispatch();
   const currentUserId = useSelector(selectCurrentUserId);
   const inputRef = useRef<HTMLInputElement>(null);
+  //const feedbackRef = useRef<HTMLDivElement>(null);
   const productsStatus = useSelector(
     (state: { products: { status: "idle" | "loading" | "succeeded" | "failed" } }) => state.products.status
   );
+  const [isFeedbackVisible, setIsFeedbackVisible] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToElement = (elem: HTMLElement) => {
     elem.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -39,6 +41,12 @@ const NewProductForm = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsFeedbackVisible(false);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
     const form: HTMLFormElement = e.currentTarget;
 
     if (form.checkValidity() === false) {
@@ -53,13 +61,9 @@ const NewProductForm = ({
 
     const category = localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "";
     const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-    const newId = Math.max(
-      (products[products.length - 1]?.id ?? 0) + 1,
-      (savedProducts[savedProducts.length - 1]?.id ?? 0) + 1
-    );
 
     const newProduct = {
-      id: newId,
+      id: null,
       name: name,
       category: category,
       checked: false,
@@ -67,65 +71,74 @@ const NewProductForm = ({
     };
 
     try {
-      if (!products.some((p) => p.name === newProduct.name)) {
+      if (![...products, ...savedProducts].some((p) => p.name === newProduct.name)) {
         setProductsList((prev) => {
           return [...prev, { ...newProduct, id: (prev[prev.length - 1]?.id ?? 0) + 1 }];
         });
+      } else {
+        setIsFeedbackVisible(true);
+        setError("Такой продукт уже существует");
+
+        timeoutRef.current = setTimeout(() => {
+          setError(null);
+          setIsFeedbackVisible(false);
+        }, 3000);
       }
 
       setName("");
       await dispatch(addProduct(newProduct)).unwrap();
       dispatch(clearProductError());
+      setError(null);
       setValidated(false);
       if (inputRef.current) {
         scrollToElement(inputRef.current);
       }
+      setIsFeedbackVisible(true);
+
+      timeoutRef.current = setTimeout(() => {
+        dispatch(clearProductError());
+        dispatch(clearProductMessage());
+        setError(null);
+      }, 3000);
 
       await dispatch(fetchProducts(currentUserId as number)).unwrap();
       await dispatch(fetchUsers()).unwrap();
     } catch (error) {
       if (products.some((p) => p.name === newProduct.name)) {
+        setIsFeedbackVisible(true);
         setError("Такой продукт уже существует");
+
+        timeoutRef.current = setTimeout(() => {
+          setError(null);
+        }, 3000);
         return;
       }
 
       const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
 
-      // const updatedProducts = savedProducts.some((p) => p.id === newProduct.id)
-      //   ? savedProducts.map((p) => (p.id === newProduct.id ? newProduct : p))
-      //   : [...savedProducts, newProduct];
-
       if (deletedProducts.some((p) => p.id === newProduct.id)) {
         localStorage.setItem("deletedProducts", JSON.stringify(deletedProducts.filter((p) => p.id !== newProduct.id)));
       }
 
-      if (!savedProducts.some((p: ProductType) => p.id === newProduct.id)) {
+      if (!savedProducts.some((p: ProductType) => p.name === newProduct.name)) {
         localStorage.setItem("savedProducts", JSON.stringify([...savedProducts, newProduct]));
       }
 
-      //localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
-
       setName("");
-      setError("Ошибка добавления продукта. Сервер не отвечает");
-      console.error("Ошибка добавления продукта", error);
+      console.error(error);
     } finally {
       inputRef.current?.focus();
+      setValidated(false);
     }
   };
 
-  const clearAlerts = () => {
-    const timeout = setTimeout(() => {
-      if (error) {
-        dispatch(clearProductError());
-        setError(null);
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
-      if (message) {
-        dispatch(clearProductMessage());
-      }
-    }, 5000);
-
-    return () => clearInterval(timeout);
-  };
+    };
+  }, []);
 
   return (
     <Card className="w-100 d-flex justify-content-center mb-3 shadow-lg" style={{ maxWidth: "700px" }}>
@@ -142,7 +155,6 @@ const NewProductForm = ({
                 placeholder="Введите название продукта"
                 value={name}
                 onChange={handleChangeValue}
-                onFocus={clearAlerts}
                 isInvalid={error !== null}
                 autoComplete="off"
                 ref={inputRef}
@@ -152,7 +164,9 @@ const NewProductForm = ({
           </Form.Group>
 
           <Form.Control.Feedback className="d-block" type={error ? "invalid" : "valid"} style={{ height: "10px" }}>
-            {error ? error : message}
+            <span /* ref={feedbackRef} */ className={isFeedbackVisible ? "visible" : "hidden"}>
+              {error ? error : message}
+            </span>
           </Form.Control.Feedback>
         </Row>
 

@@ -186,7 +186,8 @@ footer {
   top: -40px;
   transform: translateX(-50%) !important;
   border: none !important;
-  border-bottom: 2px solid #fff !important;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4) !important;
 }
 
 #new-product-form {
@@ -214,5 +215,27 @@ footer {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.visible {
+  animation: appearanse 4s ease;
+}
+
+.hidden {
+  animation: none;
+  opacity: 0;
+  user-select: none;
+}
+
+@keyframes appearanse {
+  from {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }

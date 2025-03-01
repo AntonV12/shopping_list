@@ -29,7 +29,6 @@ const ProductsList = () => {
   const currentUser = useSelector((state: { users: { users: UserType[] } }) =>
     selectUserById(state, currentUserId as number)
   );
-  //const categories = currentUser?.categories;
   const [categories, setCategories] = useState<string[]>([]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
@@ -59,11 +58,8 @@ const ProductsList = () => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (products.length === 0) return;
-
     const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-    const deletedProducts: ProductType[] =
-      JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+    const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
 
     if (deletedProducts.length > 0) {
       deletedProducts.forEach((product) => dispatch(deleteProduct(product.id as number)));
@@ -103,71 +99,70 @@ const ProductsList = () => {
     setProductsList(updatedProducts);
   };
 
-  if (productStatus === "fetching") {
-    return <div>Загрузка...</div>;
-  } else {
-    return (
-      <div className="products-list w-100">
-        <div className="d-flex align-items-center mb-2">
-          <ProductsSyncButton setSelectedCategory={setSelectedCategory} />
+  return (
+    <div className="products-list w-100">
+      <div className="d-flex align-items-center mb-2">
+        <ProductsSyncButton
+          setSelectedCategory={setSelectedCategory}
+          setProductsList={setProductsList}
+          setCategories={setCategories}
+        />
 
-          <CategoriesList
-            category={selectedCategory}
-            setCategory={setSelectedCategory}
-            categories={categories}
-            setCategories={setCategories}
-            isFirstElement={false}
-            setProductsList={setProductsList}
-          />
-        </div>
-
-        {productsList.length === 0 && selectedCategory === "Все" && productStatus === "succeeded" && (
-          <p className="text-center">Список покупок пуст...</p>
-        )}
-        <ListGroup className="mb-3">
-          {categories?.map((category) => (
-            <div key={category}>
-              {selectedCategory === "Все" ? (
-                <>
-                  {sortedList.some((product) => product.category === category) && (
-                    <h5 className="text-primary-emphasis mt-2">{category}</h5>
-                  )}
-                  {sortedList
-                    .filter((product) => product.category === category)
-                    .map((product) => (
-                      <ProductItem key={product.id} product={product} setProductsList={setProductsList} />
-                    ))}
-                </>
-              ) : (
-                <>
-                  {filteredList
-                    .filter((product) => product.category === category)
-                    .map((product) => (
-                      <ProductItem key={product.id} product={product} setProductsList={setProductsList} />
-                    ))}
-                </>
-              )}
-            </div>
-          ))}
-          {filteredList.length === 0 && selectedCategory !== "Все" && (
-            <p className="text-center">Ничего не найдено...</p>
-          )}
-        </ListGroup>
-
-        {selectedCategory !== "Все" ? (
-          <NewProductForm setProductsList={setProductsList} products={products} />
-        ) : (
-          <p className="mt-3 text-secondary">Чтобы добавить продукт, выберите категорию</p>
-        )}
-
-        <div className="w-100 mb-3 d-flex justify-content-between">
-          <Button id="clear-btn" variant="link" className="text-dark-emphasis p-0" onClick={handleClearList}>
-            Очистить список
-          </Button>
-        </div>
+        <CategoriesList
+          category={selectedCategory}
+          setCategory={setSelectedCategory}
+          categories={categories}
+          setCategories={setCategories}
+          isFirstElement={false}
+          productsList={productsList}
+          setProductsList={setProductsList}
+        />
       </div>
-    );
-  }
+
+      {productsList.length === 0 && selectedCategory === "Все" && productStatus === "succeeded" && (
+        <p className="text-center">Список покупок пуст...</p>
+      )}
+      <ListGroup className="mb-3">
+        {categories?.map((category) => (
+          <div key={category}>
+            {selectedCategory === "Все" ? (
+              <>
+                {sortedList.some((product) => product.category === category) && (
+                  <h5 className="text-primary-emphasis mt-2">{category}</h5>
+                )}
+                {sortedList
+                  .filter((product) => product.category === category)
+                  .map((product) => (
+                    <ProductItem key={product.id} product={product} setProductsList={setProductsList} />
+                  ))}
+              </>
+            ) : (
+              <>
+                {filteredList
+                  .filter((product) => product.category === category)
+                  .map((product) => (
+                    <ProductItem key={product.id} product={product} setProductsList={setProductsList} />
+                  ))}
+              </>
+            )}
+          </div>
+        ))}
+        {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
+      </ListGroup>
+
+      {selectedCategory !== "Все" ? (
+        <NewProductForm setProductsList={setProductsList} products={products} />
+      ) : (
+        <p className="mt-3 text-secondary">Чтобы добавить продукт, выберите категорию</p>
+      )}
+
+      <div className="w-100 mb-3 d-flex justify-content-end">
+        <Button id="clear-btn" variant="link" className="text-dark-emphasis p-0" onClick={handleClearList}>
+          Очистить список
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default ProductsList;
