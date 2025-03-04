@@ -7,7 +7,6 @@ import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
 import Card from "react-bootstrap/Card";
 import { selectCurrentUserId } from "../users/authSlice";
-import { fetchUsers } from "../users/usersSlice";
 import { ProductType } from "./productsSlice";
 
 const NewProductForm = ({
@@ -59,7 +58,9 @@ const NewProductForm = ({
       return;
     }
 
-    const category = localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "";
+    const category = localStorage.getItem("category")
+      ? JSON.parse(localStorage.getItem("category") as string)
+      : "";
     const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
     const newProduct = {
@@ -102,7 +103,6 @@ const NewProductForm = ({
       }, 3000);
 
       await dispatch(fetchProducts(currentUserId as number)).unwrap();
-      await dispatch(fetchUsers()).unwrap();
     } catch (error) {
       if (products.some((p) => p.name === newProduct.name)) {
         setIsFeedbackVisible(true);
@@ -114,10 +114,14 @@ const NewProductForm = ({
         return;
       }
 
-      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedProducts: ProductType[] =
+        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
 
       if (deletedProducts.some((p) => p.id === newProduct.id)) {
-        localStorage.setItem("deletedProducts", JSON.stringify(deletedProducts.filter((p) => p.id !== newProduct.id)));
+        localStorage.setItem(
+          "deletedProducts",
+          JSON.stringify(deletedProducts.filter((p) => p.id !== newProduct.id))
+        );
       }
 
       if (!savedProducts.some((p: ProductType) => p.name === newProduct.name)) {
@@ -142,7 +146,13 @@ const NewProductForm = ({
 
   return (
     <Card className="w-100 d-flex justify-content-center mb-3 shadow-lg" style={{ maxWidth: "700px" }}>
-      <Form noValidate validated={validated} className="p-3 w-100" id="new-product-form" onSubmit={handleSubmit}>
+      <Form
+        noValidate
+        validated={validated}
+        className="p-3 w-100"
+        id="new-product-form"
+        onSubmit={handleSubmit}
+      >
         <Row className="mb-3">
           <Form.Group className="d-flex align-items-end justify-content-center">
             <div className="me-2 w-100">
@@ -163,7 +173,11 @@ const NewProductForm = ({
             </div>
           </Form.Group>
 
-          <Form.Control.Feedback className="d-block" type={error ? "invalid" : "valid"} style={{ height: "10px" }}>
+          <Form.Control.Feedback
+            className="d-block"
+            type={error ? "invalid" : "valid"}
+            style={{ height: "10px" }}
+          >
             <span /* ref={feedbackRef} */ className={isFeedbackVisible ? "visible" : "hidden"}>
               {error ? error : message}
             </span>

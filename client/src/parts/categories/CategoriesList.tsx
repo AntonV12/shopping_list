@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import ListItem from "./ListItem";
 import AddCategoryForm from "./AddCategoryForm";
 import { selectCurrentUserId } from "../users/authSlice";
-import { selectUserById, UserType, updateUser } from "../users/usersSlice";
+import { selectUserById, UserType, updateUser, UserState } from "../users/usersSlice";
 import Button from "react-bootstrap/Button";
 import { ProductType, deleteProduct } from "../products/productsSlice";
 import { useAppDispatch } from "../../app/store";
@@ -27,7 +27,7 @@ const CategoriesList = ({
 }) => {
   const [isShowAddForm, setIsShowAddForm] = useState<boolean>(false);
   const currentUserId: number | null = useSelector(selectCurrentUserId);
-  const currentUser = useSelector((state: { users: { users: UserType[] } }) =>
+  const currentUser = useSelector((state: { users: UserState }) =>
     selectUserById(state, currentUserId as number)
   );
   const dispatch = useAppDispatch();
@@ -38,8 +38,10 @@ const CategoriesList = ({
       setStatus("pending");
 
       const savedCategories: string[] = JSON.parse(localStorage.getItem("savedCategories") as string) || [];
-      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
-      const deletedCategories: string[] = JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+      const deletedProducts: ProductType[] =
+        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedCategories: string[] =
+        JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
 
       if (deletedProducts.length > 0) {
         for (const product of deletedProducts) {

@@ -16,35 +16,36 @@ interface AuthState {
 
 type ErrorType = string | null;
 
-export const loginUser = createAsyncThunk<UserType, { login: string; password: string }, { rejectValue: ErrorType }>(
-  "users/loginUser",
-  async ({ login, password }, { rejectWithValue }) => {
-    try {
-      const response = await fetch("/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ login, password }),
-        credentials: "include",
-      });
+export const loginUser = createAsyncThunk<
+  UserType,
+  { login: string; password: string },
+  { rejectValue: ErrorType }
+>("users/loginUser", async ({ login, password }, { rejectWithValue }) => {
+  try {
+    const response = await fetch("/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ login, password }),
+      credentials: "include",
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to save user");
-      }
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to save user");
+    }
 
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      } else {
-        return rejectWithValue("Failed to save user");
-      }
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    if (err instanceof Error) {
+      return rejectWithValue(err.message);
+    } else {
+      return rejectWithValue("Failed to save user");
     }
   }
-);
+});
 
 export const fetchCurrentUser = createAsyncThunk<UserType, void, { rejectValue: ErrorType }>(
   "users/fetchCurrentUser",
@@ -166,4 +167,5 @@ const authSlice = createSlice({
 
 export default authSlice.reducer;
 export const { clearAuthError, clearAuthMessage, resetAuthStatus } = authSlice.actions;
-export const selectCurrentUserId = (state: { auth: AuthState }): number | null => state.auth.user?.user.id ?? null;
+export const selectCurrentUserId = (state: { auth: AuthState }): number | null =>
+  state.auth.user?.user.id ?? null;

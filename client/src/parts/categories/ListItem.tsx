@@ -4,8 +4,9 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { updateProducts } from "../products/productsSlice";
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
-import { updateUser, UserType, setUserError } from "../users/usersSlice";
+import { updateUser, UserType, setUserError, selectUserById, UserState } from "../users/usersSlice";
 import { ProductType, selectAllProducts, deleteProduct } from "../products/productsSlice";
+import { selectCurrentUserId } from "../users/authSlice";
 
 const ListItem = ({
   cat,
@@ -13,7 +14,7 @@ const ListItem = ({
   category,
   setCategory,
   isFirstElement,
-  currentUser,
+  //currentUser,
   categories,
   productsList,
   setProductsList,
@@ -24,7 +25,7 @@ const ListItem = ({
   category: string;
   setCategory: React.Dispatch<React.SetStateAction<string>>;
   isFirstElement: boolean;
-  currentUser: UserType;
+  //currentUser: UserType;
   productsList: ProductType[];
   setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
   setCategories: React.Dispatch<React.SetStateAction<string[]>>;
@@ -36,6 +37,10 @@ const ListItem = ({
   const products: ProductType[] = useSelector(selectAllProducts);
   const ref = useRef<HTMLDivElement>(null);
   const [isShowControl, setIsShowControl] = useState<boolean>(false);
+  const currentUserId: number | null = useSelector(selectCurrentUserId);
+  const currentUser: UserType = useSelector((state: { users: UserState }) =>
+    selectUserById(state, currentUserId as number)
+  );
 
   useEffect(() => {
     setInputValue(cat);
@@ -49,7 +54,7 @@ const ListItem = ({
       try {
         const updatedUser: UserType = {
           ...currentUser,
-          categories: currentUser.categories.filter((c: string) => c !== cat),
+          categories: categories.filter((c: string) => c !== cat),
         };
         const deletedProducts = products.filter((product) => product.category === cat);
         await dispatch(updateUser({ user: updatedUser })).unwrap();
@@ -58,12 +63,15 @@ const ListItem = ({
           await dispatch(deleteProduct(product.id as number)).unwrap();
         }
         handleSetActiveCategory("Все");
+        setCategories(updatedUser.categories);
       } catch (error) {
         console.error(error);
 
-        const deletedCategories: string[] = JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+        const deletedCategories: string[] =
+          JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
         deletedCategories.push(cat);
-        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+        const savedProducts: ProductType[] =
+          JSON.parse(localStorage.getItem("savedProducts") as string) || products;
 
         const deletedProducts: ProductType[] = savedProducts.filter((product) => product.category === cat);
 
@@ -96,7 +104,7 @@ const ListItem = ({
     e.preventDefault();
     try {
       if (!inputValue) return;
-      if (currentUser.categories.some((c) => c.toLowerCase().trim() === inputValue.toLowerCase().trim() && c !== cat)) {
+      if (categories.some((c) => c.toLowerCase().trim() === inputValue.toLowerCase().trim() && c !== cat)) {
         dispatch(setUserError("Такая категория уже есть"));
         return;
       }
@@ -109,7 +117,7 @@ const ListItem = ({
 
       const updatedUser: UserType = {
         ...currentUser,
-        categories: currentUser.categories.map((c: string) => (c === cat ? inputValue : c)),
+        categories: categories.map((c: string) => (c === cat ? inputValue : c)),
       };
       const updatedProducts: ProductType[] = productsList.map((product) =>
         product.category === cat ? { ...product, category: inputValue } : product
@@ -120,8 +128,10 @@ const ListItem = ({
     } catch (error) {
       console.error(error);
 
-      const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || products;
-      const savedCategories: string[] = JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
+      const savedProducts: ProductType[] =
+        JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+      const savedCategories: string[] =
+        JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
 
       const updatedCategories: string[] = savedCategories.map((c) => (c === category ? inputValue : c));
       const updatedProducts: ProductType[] = savedProducts.map((product) =>

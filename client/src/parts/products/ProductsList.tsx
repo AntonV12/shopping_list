@@ -15,7 +15,7 @@ import { useAppDispatch } from "../../app/store";
 import ProductItem from "./ProductItem";
 import CategoriesList from "../categories/CategoriesList";
 import { selectCurrentUserId } from "../users/authSlice";
-import { selectUserById, UserType, fetchUsers } from "../users/usersSlice";
+import { fetchUserCategoriesById } from "../users/usersSlice";
 import NewProductForm from "./NewProductForm";
 import ProductsSyncButton from "./ProductsSyncButton";
 
@@ -26,11 +26,7 @@ const ProductsList = () => {
   const dataFetch = useRef<boolean>(false);
   const productStatus = useSelector((state: { products: { status: statusType } }) => state.products.status);
   const currentUserId: number | null = useSelector(selectCurrentUserId);
-  const currentUser = useSelector((state: { users: { users: UserType[] } }) =>
-    selectUserById(state, currentUserId as number)
-  );
   const [categories, setCategories] = useState<string[]>([]);
-
   const [selectedCategory, setSelectedCategory] = useState<string>(
     localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "Все"
   );
@@ -38,11 +34,13 @@ const ProductsList = () => {
   const filteredList = sortedList.filter((product) => product.category === selectedCategory);
 
   useEffect(() => {
-    async function selectUsers() {
-      await dispatch(fetchUsers()).unwrap();
+    if (currentUserId) {
+      (async function () {
+        const user = await dispatch(fetchUserCategoriesById(currentUserId)).unwrap();
+        setCategories(user.categories);
+      })();
     }
-    selectUsers();
-  }, [dispatch]);
+  }, [dispatch, currentUserId]);
 
   useEffect(() => {
     if (dataFetch.current) return;
@@ -52,14 +50,9 @@ const ProductsList = () => {
   }, [dispatch, currentUserId]);
 
   useEffect(() => {
-    if (currentUser) {
-      setCategories(currentUser?.categories);
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
     const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-    const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+    const deletedProducts: ProductType[] =
+      JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
 
     if (deletedProducts.length > 0) {
       deletedProducts.forEach((product) => dispatch(deleteProduct(product.id as number)));
@@ -147,7 +140,9 @@ const ProductsList = () => {
             )}
           </div>
         ))}
-        {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
+        {filteredList.length === 0 && selectedCategory !== "Все" && (
+          <p className="text-center">Ничего не найдено...</p>
+        )}
       </ListGroup>
 
       {selectedCategory !== "Все" ? (

@@ -11,8 +11,9 @@ export type statusType = "idle" | "loading" | "succeeded" | "failed";
 
 export type ErrorType = string | null;
 
-interface UserState {
+export interface UserState {
   users: UserType[];
+  currentUser: UserType | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: ErrorType;
   message: string | null;
@@ -41,6 +42,33 @@ export const registerUser = createAsyncThunk<UserType, UserType, { rejectValue: 
         return rejectWithValue(err.message);
       } else {
         return rejectWithValue("Failed to save user");
+      }
+    }
+  }
+);
+
+export const fetchUserCategoriesById = createAsyncThunk<UserType, number, { rejectValue: ErrorType }>(
+  "users/fetchUserById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/auth/users/${id}/categories`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch user");
+      }
+
+      return await response.json();
+    } catch (err) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      } else {
+        return rejectWithValue("Failed to fetch user");
       }
     }
   }
@@ -106,6 +134,7 @@ export const updateUser = createAsyncThunk<
 
 const initialState: UserState = {
   users: [],
+  currentUser: null,
   status: "idle",
   error: null,
   message: null,
@@ -172,6 +201,17 @@ const usersSlice = createSlice({
       .addCase(updateUser.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
         state.error = action.payload || "Failed to save user";
+      })
+      .addCase(fetchUserCategoriesById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchUserCategoriesById.fulfilled, (state, action: PayloadAction<UserType>) => {
+        state.status = "succeeded";
+        state.currentUser = action.payload;
+      })
+      .addCase(fetchUserCategoriesById.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
+        state.status = "failed";
+        state.error = action.payload || "Failed to fetch user categories";
       });
   },
 });
@@ -179,5 +219,8 @@ const usersSlice = createSlice({
 export default usersSlice.reducer;
 export const { clearUserError, clearUserMessage, resetUserStatus, setUserError } = usersSlice.actions;
 export const selectAllUsers = (state: { users: { users: UserType[] } }) => state.users.users;
-export const selectUserById = (state: { users: { users: UserType[] } }, userId: number) =>
-  state.users.users.find((user) => user.id === userId);
+export const selectUserById = (state: { users: UserState }, userId: number) => {
+  if (userId) {
+    return state.users.currentUser;
+  }
+};

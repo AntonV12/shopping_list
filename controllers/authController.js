@@ -132,3 +132,15 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ error: "Внутренняя ошибка сервера" });
   }
 };
+
+export const fetchUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [results] = await pool.execute("SELECT * FROM users WHERE id = ?", [id]);
+    res.send(results[0]);
+  } catch (err) {
+    console.error("Ошибка получения категорий пользователя:", err);
+    res.status(500).json({ error: "Внутренняя ошибка сервера" });
+  }
+};
