@@ -2,7 +2,7 @@ import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
 import { fetchProducts, ProductType } from "./productsSlice";
 import { selectCurrentUserId } from "../users/authSlice";
-import { UserType, fetchUserCategoriesById } from "../users/usersSlice";
+import { UserType, fetchUserById } from "../users/usersSlice";
 import Button from "react-bootstrap/Button";
 import { useState, useRef } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -30,7 +30,7 @@ const ProductsSyncButton = ({
       }
 
       if (currentUserId) {
-        const user: UserType = await dispatch(fetchUserCategoriesById(currentUserId)).unwrap();
+        const user: UserType = await dispatch(fetchUserById(currentUserId)).unwrap();
         const newProducts: ProductType[] = await dispatch(fetchProducts(currentUserId)).unwrap();
         const updatedCategories: string[] = user.categories;
 
@@ -71,12 +71,7 @@ const ProductsSyncButton = ({
           </Tooltip>
         }
       >
-        <Button
-          variant="none"
-          className="reload-btn"
-          onClick={handleSync}
-          disabled={requestStatus === "pending"}
-        >
+        <Button variant="none" className="reload-btn" onClick={handleSync} disabled={requestStatus === "pending"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"

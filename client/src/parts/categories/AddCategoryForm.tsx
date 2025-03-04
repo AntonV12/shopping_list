@@ -1,6 +1,6 @@
 import { useState, memo } from "react";
 import { useAppDispatch } from "../../app/store";
-import { updateUser, UserType, setUserError } from "../users/usersSlice";
+import { updateUser, UserType, setUserError, fetchUserById } from "../users/usersSlice";
 
 const AddCategoryForm = ({
   currentUser,
@@ -15,6 +15,7 @@ const AddCategoryForm = ({
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const dispatch = useAppDispatch();
+  const [userStatus, setUserStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
 
   const onChangeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -22,43 +23,43 @@ const AddCategoryForm = ({
 
   const handleSubmit = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setUserStatus("pending");
+
+    const user = await dispatch(fetchUserById(currentUser.id as number)).unwrap();
 
     try {
       if (!inputValue) return;
-      if (
-        currentUser.categories.some(
-          (category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim()
-        )
-      ) {
+      if (user.categories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())) {
         dispatch(setUserError("Такая категория уже есть"));
         return;
       }
 
       const updatedUser: UserType = {
-        ...currentUser,
-        categories: [...currentUser.categories, inputValue],
+        ...user,
+        categories: [...user.categories, inputValue],
       };
 
       await dispatch(updateUser({ user: updatedUser })).unwrap();
       setCategories(updatedUser.categories);
       handleSetActiveCategory(inputValue);
       setInputValue("");
+      setUserStatus("success");
     } catch (error) {
       console.error(error);
 
       const savedCategories: string[] =
-        JSON.parse(localStorage.getItem("savedCategories") as string) || currentUser.categories;
+        JSON.parse(localStorage.getItem("savedCategories") as string) || user.categories;
 
-      if (
-        !savedCategories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())
-      ) {
+      if (!savedCategories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())) {
         const updatedCategories: string[] = [...savedCategories, inputValue];
         localStorage.setItem("savedCategories", JSON.stringify(updatedCategories));
         setCategories(updatedCategories);
         handleSetActiveCategory(inputValue);
       }
+      setUserStatus("failed");
     } finally {
       setIsShowAddForm(false);
+      setUserStatus("idle");
     }
   };
 
@@ -77,6 +78,7 @@ const AddCategoryForm = ({
         autoFocus
         placeholder="Новая категория"
         maxLength={20}
+        disabled={userStatus === "pending"}
       />
       <button type="submit" className="border-0 btn btn-outline-secondary p-0">
         <svg

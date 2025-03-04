@@ -4,9 +4,8 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { updateProducts } from "../products/productsSlice";
 import { useAppDispatch } from "../../app/store";
 import { useSelector } from "react-redux";
-import { updateUser, UserType, setUserError, selectUserById, UserState } from "../users/usersSlice";
+import { updateUser, UserType, setUserError } from "../users/usersSlice";
 import { ProductType, selectAllProducts, deleteProduct } from "../products/productsSlice";
-import { selectCurrentUserId } from "../users/authSlice";
 
 const ListItem = ({
   cat,
@@ -14,7 +13,7 @@ const ListItem = ({
   category,
   setCategory,
   isFirstElement,
-  //currentUser,
+  currentUser,
   categories,
   productsList,
   setProductsList,
@@ -25,7 +24,7 @@ const ListItem = ({
   category: string;
   setCategory: React.Dispatch<React.SetStateAction<string>>;
   isFirstElement: boolean;
-  //currentUser: UserType;
+  currentUser: UserType;
   productsList: ProductType[];
   setProductsList: React.Dispatch<React.SetStateAction<ProductType[]>>;
   setCategories: React.Dispatch<React.SetStateAction<string[]>>;
@@ -37,10 +36,6 @@ const ListItem = ({
   const products: ProductType[] = useSelector(selectAllProducts);
   const ref = useRef<HTMLDivElement>(null);
   const [isShowControl, setIsShowControl] = useState<boolean>(false);
-  const currentUserId: number | null = useSelector(selectCurrentUserId);
-  const currentUser: UserType = useSelector((state: { users: UserState }) =>
-    selectUserById(state, currentUserId as number)
-  );
 
   useEffect(() => {
     setInputValue(cat);
@@ -67,11 +62,9 @@ const ListItem = ({
       } catch (error) {
         console.error(error);
 
-        const deletedCategories: string[] =
-          JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+        const deletedCategories: string[] = JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
         deletedCategories.push(cat);
-        const savedProducts: ProductType[] =
-          JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || products;
 
         const deletedProducts: ProductType[] = savedProducts.filter((product) => product.category === cat);
 
@@ -128,10 +121,8 @@ const ListItem = ({
     } catch (error) {
       console.error(error);
 
-      const savedProducts: ProductType[] =
-        JSON.parse(localStorage.getItem("savedProducts") as string) || products;
-      const savedCategories: string[] =
-        JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
+      const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || products;
+      const savedCategories: string[] = JSON.parse(localStorage.getItem("savedCategories") as string) || categories;
 
       const updatedCategories: string[] = savedCategories.map((c) => (c === category ? inputValue : c));
       const updatedProducts: ProductType[] = savedProducts.map((product) =>

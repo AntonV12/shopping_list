@@ -18,6 +18,6 @@ router.post("/logout", logout);
 router.get("/current-user", currentUser);
 router.get("/users", getUsers);
 router.put("/users/:id", authenticateUser, updateUser);
-router.get("/users/:id/categories", authenticateUser, fetchUserById);
+router.get("/users/:id/", authenticateUser, fetchUserById);
 
 export default router;

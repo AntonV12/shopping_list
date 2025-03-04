@@ -27,9 +27,7 @@ const CategoriesList = ({
 }) => {
   const [isShowAddForm, setIsShowAddForm] = useState<boolean>(false);
   const currentUserId: number | null = useSelector(selectCurrentUserId);
-  const currentUser = useSelector((state: { users: UserState }) =>
-    selectUserById(state, currentUserId as number)
-  );
+  const currentUser = useSelector((state: { users: UserState }) => selectUserById(state, currentUserId as number));
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
 
@@ -38,10 +36,8 @@ const CategoriesList = ({
       setStatus("pending");
 
       const savedCategories: string[] = JSON.parse(localStorage.getItem("savedCategories") as string) || [];
-      const deletedProducts: ProductType[] =
-        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
-      const deletedCategories: string[] =
-        JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
+      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedCategories: string[] = JSON.parse(localStorage.getItem("deletedCategories") as string) || [];
 
       if (deletedProducts.length > 0) {
         for (const product of deletedProducts) {

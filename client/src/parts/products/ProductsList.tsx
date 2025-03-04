@@ -15,7 +15,7 @@ import { useAppDispatch } from "../../app/store";
 import ProductItem from "./ProductItem";
 import CategoriesList from "../categories/CategoriesList";
 import { selectCurrentUserId } from "../users/authSlice";
-import { fetchUserCategoriesById } from "../users/usersSlice";
+import { fetchUserById } from "../users/usersSlice";
 import NewProductForm from "./NewProductForm";
 import ProductsSyncButton from "./ProductsSyncButton";
 
@@ -36,7 +36,7 @@ const ProductsList = () => {
   useEffect(() => {
     if (currentUserId) {
       (async function () {
-        const user = await dispatch(fetchUserCategoriesById(currentUserId)).unwrap();
+        const user = await dispatch(fetchUserById(currentUserId)).unwrap();
         setCategories(user.categories);
       })();
     }
@@ -47,12 +47,11 @@ const ProductsList = () => {
     dataFetch.current = true;
 
     dispatch(fetchProducts(currentUserId as number)).unwrap();
-  }, [dispatch, currentUserId]);
+  }, [dispatch, currentUserId, productStatus]);
 
   useEffect(() => {
     const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-    const deletedProducts: ProductType[] =
-      JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+    const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
 
     if (deletedProducts.length > 0) {
       deletedProducts.forEach((product) => dispatch(deleteProduct(product.id as number)));
@@ -64,6 +63,7 @@ const ProductsList = () => {
     ];
 
     if (savedProducts.length > 0) {
+      if (products.length === 0) return;
       savedProducts.forEach((product) => {
         const index = updatedProducts.findIndex((p) => p.id === product.id);
         if (index === -1) {
@@ -140,9 +140,7 @@ const ProductsList = () => {
             )}
           </div>
         ))}
-        {filteredList.length === 0 && selectedCategory !== "Все" && (
-          <p className="text-center">Ничего не найдено...</p>
-        )}
+        {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
       </ListGroup>
 
       {selectedCategory !== "Все" ? (

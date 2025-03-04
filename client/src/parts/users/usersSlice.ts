@@ -47,11 +47,11 @@ export const registerUser = createAsyncThunk<UserType, UserType, { rejectValue: 
   }
 );
 
-export const fetchUserCategoriesById = createAsyncThunk<UserType, number, { rejectValue: ErrorType }>(
+export const fetchUserById = createAsyncThunk<UserType, number, { rejectValue: ErrorType }>(
   "users/fetchUserById",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/auth/users/${id}/categories`, {
+      const response = await fetch(`/auth/users/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -187,8 +187,8 @@ const usersSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action: PayloadAction<UserType>) => {
         state.status = "succeeded";
-        const { id, login, password, categories } = action.payload;
-        const existingUser = state.users.find((user) => user.id == id);
+        const { login, password, categories } = action.payload;
+        const existingUser = state.currentUser;
 
         if (existingUser) {
           existingUser.login = login;
@@ -202,14 +202,14 @@ const usersSlice = createSlice({
         state.status = "failed";
         state.error = action.payload || "Failed to save user";
       })
-      .addCase(fetchUserCategoriesById.pending, (state) => {
+      .addCase(fetchUserById.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchUserCategoriesById.fulfilled, (state, action: PayloadAction<UserType>) => {
+      .addCase(fetchUserById.fulfilled, (state, action: PayloadAction<UserType>) => {
         state.status = "succeeded";
         state.currentUser = action.payload;
       })
-      .addCase(fetchUserCategoriesById.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
+      .addCase(fetchUserById.rejected, (state, action: PayloadAction<ErrorType | undefined>) => {
         state.status = "failed";
         state.error = action.payload || "Failed to fetch user categories";
       });

@@ -24,9 +24,9 @@ function Root() {
   const handleShowModal = () => setIsModalShow(true);
   const handleCloseModal = () => setIsModalShow(false);
 
-  if (authStatus === "loading") {
+  /* if (authStatus === "loading") {
     return <div className="text-center position-absolute top-50 start-50 translate-middle">Загрузка...</div>;
-  }
+  } */
 
   return (
     <div id="wrapper" className="d-flex flex-column">
@@ -39,15 +39,13 @@ function Root() {
           {!currentUserId && authStatus === "failed" ? (
             <section>
               <p className="text-dark-emphasis mt-3">
-                Сервис для управления семейным списком покупок. Вы можете разделить свой список покупок на
-                категории. Общий аккаунт для всей семьи позволит планировать покупки. Просто добавьте товары в
-                желаемую категорию и вся семья будет знать, что нужно купить.
+                Сервис для управления семейным списком покупок. Вы можете разделить свой список покупок на категории.
+                Общий аккаунт для всей семьи позволит планировать покупки. Просто добавьте товары в желаемую категорию и
+                вся семья будет знать, что нужно купить.
               </p>
             </section>
           ) : (
-            <>
-              <ProductsList />
-            </>
+            <>{authStatus === "succeeded" && <ProductsList />}</>
           )}
         </main>
 
