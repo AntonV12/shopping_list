@@ -1,8 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { pool } from "../config/database.js";
-import { accessTokenSecret, refreshTokenSecret } from "../config/dotenv.js";
+//import { accessTokenSecret, refreshTokenSecret } from "../config/dotenv.js";
 import { refreshAccessToken } from "../middlewares/refreshAccessToken.js";
+export const accessTokenSecret = "access_secret";
+export const refreshTokenSecret = "refresh_secret";
 
 export const register = async (req, res) => {
   const { login, password, categories } = req.body;
@@ -128,7 +130,7 @@ export const updateUser = async (req, res) => {
     const { login, password } = existingUser[0][0];
     const sql = "UPDATE users SET login = ?, password = ?, categories = ? WHERE id = ?";
     const [results] = await pool.execute(sql, [login, password, JSON.stringify(categories), id]);
-    res.send({ id, login, password, categories });
+    res.send({ id, login, /* password, */ categories });
   } catch (err) {
     console.error("Ошибка обновления пользователя:", err);
     res.status(500).json({ error: "Внутренняя ошибка сервера" });
