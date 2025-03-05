@@ -30,8 +30,8 @@ const ProductsList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>(
     localStorage.getItem("category") ? JSON.parse(localStorage.getItem("category") as string) : "Все"
   );
-  const sortedList = [...productsList].sort((a, b) => +a.checked - +b.checked);
-  const filteredList = sortedList.filter((product) => product.category === selectedCategory);
+  const sortedList: ProductType[] = [...productsList].sort((a, b) => +a.checked - +b.checked);
+  const filteredList: ProductType[] = sortedList.filter((product) => product.category === selectedCategory);
 
   useEffect(() => {
     if (currentUserId) {
@@ -51,7 +51,8 @@ const ProductsList = () => {
 
   useEffect(() => {
     const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
-    const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+    const deletedProducts: ProductType[] =
+      JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
 
     if (deletedProducts.length > 0) {
       deletedProducts.forEach((product) => dispatch(deleteProduct(product.id as number)));
@@ -140,7 +141,9 @@ const ProductsList = () => {
             )}
           </div>
         ))}
-        {filteredList.length === 0 && selectedCategory !== "Все" && <p className="text-center">Ничего не найдено...</p>}
+        {filteredList.length === 0 && selectedCategory !== "Все" && (
+          <p className="text-center">Ничего не найдено...</p>
+        )}
       </ListGroup>
 
       {selectedCategory !== "Все" ? (

@@ -121,9 +121,11 @@ export const logout = (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { login, password, categories } = req.body;
+  const { categories } = req.body;
 
   try {
+    const existingUser = await pool.execute("SELECT * FROM users WHERE id = ?", [id]);
+    const { login, password } = existingUser[0][0];
     const sql = "UPDATE users SET login = ?, password = ?, categories = ? WHERE id = ?";
     const [results] = await pool.execute(sql, [login, password, JSON.stringify(categories), id]);
     res.send({ id, login, password, categories });
@@ -138,7 +140,8 @@ export const fetchUserById = async (req, res) => {
 
   try {
     const [results] = await pool.execute("SELECT * FROM users WHERE id = ?", [id]);
-    res.send(results[0]);
+    const { login, categories } = results[0];
+    res.send({ id, login, categories });
   } catch (err) {
     console.error("Ошибка получения категорий пользователя:", err);
     res.status(500).json({ error: "Внутренняя ошибка сервера" });

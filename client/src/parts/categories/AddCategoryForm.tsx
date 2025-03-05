@@ -29,7 +29,9 @@ const AddCategoryForm = ({
 
     try {
       if (!inputValue) return;
-      if (user.categories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())) {
+      if (
+        user.categories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())
+      ) {
         dispatch(setUserError("Такая категория уже есть"));
         return;
       }
@@ -50,7 +52,9 @@ const AddCategoryForm = ({
       const savedCategories: string[] =
         JSON.parse(localStorage.getItem("savedCategories") as string) || user.categories;
 
-      if (!savedCategories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())) {
+      if (
+        !savedCategories.some((category) => category.toLowerCase().trim() === inputValue.toLowerCase().trim())
+      ) {
         const updatedCategories: string[] = [...savedCategories, inputValue];
         localStorage.setItem("savedCategories", JSON.stringify(updatedCategories));
         setCategories(updatedCategories);

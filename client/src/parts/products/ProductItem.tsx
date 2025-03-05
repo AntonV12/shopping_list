@@ -19,40 +19,44 @@ const ProductItem = ({
   const dispatch = useAppDispatch();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  useEffect(() => {
+    window.scrollTo({ top: scrollPosition, behavior: "auto" });
+  }, [scrollPosition]);
 
   useEffect(() => {
     setInputValue(product.name);
     setChecked(product.checked);
   }, [product]);
 
-  const handleCheck = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      try {
-        setChecked(e.target.checked);
-        const updatedProduct = { ...product, checked: e.target.checked };
+  const handleCheck = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currentScrollPosition = window.scrollY;
+    setScrollPosition(currentScrollPosition);
 
-        setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
-        await dispatch(updateProduct(updatedProduct)).unwrap();
-      } catch (err) {
-        console.error(err);
+    try {
+      setChecked(e.target.checked);
+      const updatedProduct = { ...product, checked: e.target.checked };
+      setProductsList((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)));
+      await dispatch(updateProduct(updatedProduct)).unwrap();
+    } catch (err) {
+      console.error(err);
 
-        const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
+      const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
-        if (savedProducts.some((p) => p.id === product.id)) {
-          const updatedProducts = savedProducts.map((p) =>
-            p.id === product.id ? { ...p, checked: e.target.checked } : p
-          );
-          localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
-        } else {
-          localStorage.setItem(
-            "savedProducts",
-            JSON.stringify([...savedProducts, { ...product, checked: e.target.checked }])
-          );
-        }
+      if (savedProducts.some((p) => p.id === product.id)) {
+        const updatedProducts = savedProducts.map((p) =>
+          p.id === product.id ? { ...p, checked: e.target.checked } : p
+        );
+        localStorage.setItem("savedProducts", JSON.stringify(updatedProducts));
+      } else {
+        localStorage.setItem(
+          "savedProducts",
+          JSON.stringify([...savedProducts, { ...product, checked: e.target.checked }])
+        );
       }
-    },
-    [dispatch, product, setProductsList]
-  );
+    }
+  };
 
   const handleDelete = useCallback(async () => {
     try {
@@ -61,11 +65,15 @@ const ProductItem = ({
     } catch (err) {
       console.error(err);
 
-      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedProducts: ProductType[] =
+        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
       const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
       if (savedProducts.some((p) => p.id === product.id)) {
-        localStorage.setItem("savedProducts", JSON.stringify(savedProducts.filter((p) => p.id !== product.id)));
+        localStorage.setItem(
+          "savedProducts",
+          JSON.stringify(savedProducts.filter((p) => p.id !== product.id))
+        );
       }
 
       if (!deletedProducts.some((p: ProductType) => p.id === product.id)) {
@@ -114,6 +122,7 @@ const ProductItem = ({
   return (
     <>
       <ListGroup.Item
+        key={product.id}
         className="d-flex align-items-center p-0 ps-3 rounded shadow-lg"
         style={checked ? { textDecoration: "line-through", color: "grey" } : {}}
         variant={checked ? "secondary" : "light"}
