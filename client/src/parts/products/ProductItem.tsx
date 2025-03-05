@@ -22,7 +22,7 @@ const ProductItem = ({
   const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
-    window.scrollTo({ top: scrollPosition, behavior: "auto" });
+    window.scrollTo({ top: scrollPosition, behavior: "instant" });
   }, [scrollPosition]);
 
   useEffect(() => {
@@ -65,15 +65,11 @@ const ProductItem = ({
     } catch (err) {
       console.error(err);
 
-      const deletedProducts: ProductType[] =
-        JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
+      const deletedProducts: ProductType[] = JSON.parse(localStorage.getItem("deletedProducts") as string) || [];
       const savedProducts: ProductType[] = JSON.parse(localStorage.getItem("savedProducts") as string) || [];
 
       if (savedProducts.some((p) => p.id === product.id)) {
-        localStorage.setItem(
-          "savedProducts",
-          JSON.stringify(savedProducts.filter((p) => p.id !== product.id))
-        );
+        localStorage.setItem("savedProducts", JSON.stringify(savedProducts.filter((p) => p.id !== product.id)));
       }
 
       if (!deletedProducts.some((p: ProductType) => p.id === product.id)) {
